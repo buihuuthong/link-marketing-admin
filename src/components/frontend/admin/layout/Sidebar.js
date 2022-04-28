@@ -15,7 +15,7 @@ const Sidebar = () => {
               {" "}
               <i className="fa-solid fa-chart-mixed"></i>
             </div>{" "}
-            Admin
+            Admin quản lí Sale
           </a>
 
           <a
@@ -27,7 +27,19 @@ const Sidebar = () => {
               {" "}
               <i className="fa-solid fa-chart-mixed"></i>
             </div>{" "}
-            Sale
+            Sale quản lí người dùng
+          </a>
+          
+          <a
+            className="nav-a"
+            href="/user-forgot-password"
+            style={{ textAlign: "center", padding: "10px 0" }}
+          >
+            <div className="sb-nav-link-icon">
+              {" "}
+              <i className="fa-solid fa-chart-mixed"></i>
+            </div>{" "}
+            Người dùng quên mật khẩu
           </a>
         </div>
       </div>

@@ -6,13 +6,12 @@ import Highlighter from "react-highlight-words";
 import ReactDOM from "react-dom";
 import "antd/dist/antd.css";
 
-const Admin = () => {
+const UserForgotPassWord = () => {
   const [dataTable, setDataTable] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editUser, setEditUser] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState();
-  const [Count, setCount] = useState()
 
   useEffect(() => {
     getDataTable();
@@ -20,7 +19,7 @@ const Admin = () => {
 
   const getDataTable = () => {
     axios
-      .get("http://113.161.151.124:8082/api/managers/sales", {
+      .get("http://113.161.151.124:8082/api/password-reset/users", {
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
         }
@@ -212,39 +211,31 @@ const Admin = () => {
       align: "center",
     },
     {
-      title: "Tài khoản",
-      dataIndex: "username",
-      width: 200,
-      align: "center",
-      ...getColumnSearchProps("username"),
-    },
-    {
       title: "Họ và tên",
-      dataIndex: "fullName",
+      dataIndex: "userFullName",
       width: 200,
       align: "center",
-      ...getColumnSearchProps("fullName"),
-    },
-    {
-      title: "Chức vụ",
-      dataIndex: "role",
-      width: 150,
-      align: "center",
-      ...getColumnSearchProps("role"),
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "isLocked",
-      width: 200,
-      align: "center",
-      ...getColumnSearchProps("isLocked"),
+      ...getColumnSearchProps("userFullName"),
     },
     {
       title: "Số điện thoại",
-      dataIndex: "contactPhone",
+      dataIndex: "userPhone",
       width: 200,
       align: "center",
-      ...getColumnSearchProps("contactPhone"),
+      ...getColumnSearchProps("userPhone"),
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      width: 200,
+      align: "center",
+      ...getColumnSearchProps("status"),
+    },
+    {
+      title: "Lưu ý",
+      dataIndex: "note",
+      width: 200,
+      align: "center",
     },
     {
       title: "Hành động",
@@ -379,4 +370,4 @@ const Admin = () => {
   );
 };
 
-export default Admin;
+export default UserForgotPassWord;

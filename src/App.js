@@ -7,6 +7,7 @@ import MasterLayoutSale from './components/frontend/admin/layout/MasterLayoutSal
 import MedalProvider from './components/context/Context';
 import UserInformation from '../src/components/frontend/admin/layout/userInformation/Index'
 import ForgotPassword from '../src/components/frontend/auth/ForgotPassword'
+import MasterLayoutForgotPw from './components/frontend/admin/layout/MasterLayoutForgotPW'
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/admin" element={<MasterLayoutAdmin />} />
         <Route path="/admin-user" element={<MasterLayoutSale />} />
         <Route path="/user-information" element={<UserInformation />} />
+        <Route path="/user-forgot-password" element={<MasterLayoutForgotPw />} />
       </Routes>
 </MedalProvider>
      
