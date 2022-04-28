@@ -1,0 +1,36 @@
+@mixin color($color:#fff) {
+    color:$color;
+}
+@mixin padding() {
+      padding:9px 20px 9px 15px ;
+}
+@mixin cusrsor ($cusrsor:pointer){
+    cursor:$cusrsor;
+}
+@mixin border($border:0){
+    border:$border;
+}
+@mixin lineheight($lineheight:24px) {
+    line-height:$lineheight; 
+}
+@mixin fontfamily($fontfamily:inherit) {
+    font-family:$fontfamily;
+}
+@mixin fontweight($weight:600) {
+    font-weight:$weight;
+}
+@mixin fontsize($size:14px) {
+    font-size:$size;
+}
+@mixin overflow($over:hidden) {
+    overflow: hidden;
+}
+@mixin textAlign{
+    text-align:center;
+}
+@mixin radius {
+    border-radius: 11px;
+}
+@mixin margin{
+    margin:0 10px;
+}

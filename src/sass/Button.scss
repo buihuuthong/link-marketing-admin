@@ -1,0 +1,51 @@
+@import "./mixins";
+
+.btn {
+    text-align: center;
+    
+    
+    &-delete ,&-Add, &-Open ,&-Today ,&-User ,&-Update,&-thoat ,&-save,&-back {
+      @include color;
+      @include padding;
+      @include cusrsor;
+      @include border;
+      @include lineheight;
+      @include fontfamily;
+      @include fontweight;
+      @include fontsize;
+      @include overflow;
+      @include textAlign;
+      @include radius;
+      @include margin;
+
+    }
+    &-delete{
+        background-color: #362A89;
+    }
+    &-Add{
+        background-color: #1477b5;
+    }
+    &-Open{
+        background-color: #d73810;
+    }
+    &-Today{
+        background-color: #FFD700;
+    }
+    &-User{
+        background-color: orange;
+    }
+    &-Update{
+        background-color: #D24D57;
+    }
+    &-save{
+        background-color: #362A89;
+        
+
+    }
+    &-back{
+        background-color: #feecea;
+        color:#dc7e7c;
+    }
+   
+
+}
