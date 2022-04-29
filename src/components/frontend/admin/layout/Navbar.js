@@ -38,7 +38,7 @@ const Navbar = () => {
           >
             <li>
               <a className="dropdown-item" href="/">
-                Logout
+                Đăng xuất
               </a>
             </li>
           </ul>

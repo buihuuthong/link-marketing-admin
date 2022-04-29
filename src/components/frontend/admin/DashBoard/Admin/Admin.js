@@ -6,13 +6,19 @@ import Highlighter from "react-highlight-words";
 import ReactDOM from "react-dom";
 import "antd/dist/antd.css";
 
-const Admin = () => {
+const Admin = (record) => {
   const [dataTable, setDataTable] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalAddSale, setModalAddSale] = useState(false)
   const [editUser, setEditUser] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState();
-  const [Count, setCount] = useState()
+
+  //Thêm sale
+  const [salePhone, setSalePhone] = useState('')
+  const [saleFullName, setSaleFullName] = useState('')
+  const [saleUserName, setSaleUserName] = useState('')
+  const [salePassWord, setSalePassWord] = useState('')
 
   useEffect(() => {
     getDataTable();
@@ -68,7 +74,6 @@ const Admin = () => {
   };
 
   const DeleteUser = (record) => {
-    
     axios
       .delete("http://113.161.151.124:8082/api/managers/sales", {
         headers: {
@@ -93,7 +98,7 @@ const Admin = () => {
 
   const onDeleteUser = (record) => {
     Modal.confirm({
-      title: "Bạn có chắc chắn muốn xóa người dùng này?",
+      title: "Bạn có chắc chắn muốn xóa tài khoản này?",
       okText: "Xác nhận",
       okType: "danger",
       onOk: () => {
@@ -106,6 +111,42 @@ const Admin = () => {
     });
   };
 
+  const LockedUser = (record) =>{
+    axios
+      .put("http://113.161.151.124:8082/api/managers/sales/lock",{} ,{
+        headers: {
+          'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
+        },
+        params: {
+          "username": record.username,
+          "isLocked": true
+        }
+      })
+      .then(function (response) {
+        // handle success
+        console.log("Success");
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error.request);
+      })
+      .then(function () {
+        // always executed
+      });
+  }
+
+  const onLockedUser = (record) => {
+    Modal.confirm({
+      title: "Bạn có chắc chắn muốn khóa tài khoản này?",
+      okText: "Xác nhận",
+      okType: "danger",
+      onOk: () => {
+        LockedUser(record)
+      },
+      cancelText: "Hủy",
+    });
+  }
+
   const editUsersTable = (record) => {
     setIsModalVisible(true);
     setEditUser({ ...record });
@@ -114,7 +155,7 @@ const Admin = () => {
   const resetEditing = () => {
     setIsModalVisible(false);
     setEditUser(null);
-  };
+  }
 
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({
@@ -204,10 +245,47 @@ const Admin = () => {
     setSearchText("");
   };
 
+  const handleOk = () => {
+    const data = {
+      "contactPhone": salePhone,
+      "fullName": saleFullName,
+      "password": salePassWord,
+      "username": saleUserName
+    }
+    
+    axios
+      .post("http://113.161.151.124:8082/api/managers/sales", data, {
+        headers: {
+          'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
+        },
+      })
+      .then(function (response) {
+        // handle success
+        console.log("Success");
+        setModalAddSale(false)
+        getDataTable()
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error.request);
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
+  const handleCancel = () => {
+    setModalAddSale(false);
+    setSalePhone('')
+    setSaleFullName('')
+    setSaleUserName('')
+    setSalePassWord('')
+  };
+
   const columns = [
     {
       title: "STT",
-      dataIndex: "1",
+      dataIndex: "key",
       width: 100,
       align: "center",
     },
@@ -253,9 +331,7 @@ const Admin = () => {
       key: "x",
       render: (record) => (
         <Space size="middle">
-          <a href="http://localhost:3000/user-information">
-            Thông tin chi tiết
-          </a>
+          <a onClick={() => onLockedUser(record)}>Khóa</a>
           <a onClick={() => editUsersTable(record)}>Sửa</a>
           <a onClick={() => onDeleteUser(record)}>Xóa</a>
         </Space>
@@ -271,6 +347,14 @@ const Admin = () => {
         margin: 20,
       }}
     >
+      <>
+        <Button 
+          type="primary"
+          onClick={() => setModalAddSale(true)}
+        >
+          ✖️Thêm tài khoản Sale 
+        </Button>
+      </>
       <Table
         columns={columns}
         dataSource={dataTable}
@@ -304,17 +388,6 @@ const Admin = () => {
         okText="Xác nhận"
         cancelText="Hủy"
       >
-        {/* <label>
-          <p style={{ marginTop: 5 }}>Tài khoản: {}</p>
-        </label>
-        <Input
-          value={editUser?.username}
-          onChange={(e) => {
-            setEditUser((pre) => {
-              return { ...pre, username: e.target.value };
-            });
-          }}
-        /> */}
 
         <label>
           <p style={{ marginTop: 5 }}>Họ và Tên: {}</p>
@@ -328,40 +401,6 @@ const Admin = () => {
           }}
         />
 
-        {/* <label>
-          <p style={{ marginTop: 5 }}>Chức vụ: {}</p>
-        </label>
-        <Input
-          value={editUser?.role}
-          onChange={(e) => {
-            setEditUser((pre) => {
-              return { ...pre, role: e.target.value };
-            });
-          }}
-        /> */}
-
-        {/* <label>
-          <p style={{ marginTop: 5 }}>Trạng thái:</p>
-        </label>
-        <div>
-          <select 
-            value={editUser?.isLocked}
-            onChange={(e) => {
-              setEditUser((pre) => {
-                return { ...pre, isLocked: e.target.value };
-              });
-            }}
-            style={{
-              width: '100%',
-              padding: 5,
-              borderColor: '#E0E0E0'
-            }}
-          >
-            <option value={true}>Đã khóa</option>
-            <option value={false}>Đang hoạt động</option>
-          </select>
-        </div> */}
-
         <label>
           <p style={{ marginTop: 5 }}>Số điện thoại:</p>
         </label>
@@ -374,6 +413,49 @@ const Admin = () => {
           }}
         />
 
+      </Modal>
+
+      {/* Modal thêm sale */}
+      <Modal title="Basic Modal" visible={modalAddSale} onOk={handleOk} onCancel={handleCancel} >
+        <label>
+          <p style={{ marginTop: 5 }}>Họ và Tên: {}</p>
+        </label>
+        <Input
+          value={saleFullName}
+          onChange={(e) => {
+            setSaleFullName(e.target.value);
+          }}
+        />
+        
+        <label>
+          <p style={{ marginTop: 5 }}>Tài khoản: {}</p>
+        </label>
+        <Input
+          value={saleUserName}
+          onChange={(e) => {
+            setSaleUserName(e.target.value);
+          }}
+        />
+        
+        <label>
+          <p style={{ marginTop: 5 }}>Mật khẩu: {}</p>
+        </label>
+        <Input
+          value={salePassWord}
+          onChange={(e) => {
+            setSalePassWord(e.target.value);
+          }}
+        />
+        
+        <label>
+          <p style={{ marginTop: 5 }}>Số điện thoại: {}</p>
+        </label>
+        <Input
+          value={salePhone}
+          onChange={(e) => {
+            setSalePhone(e.target.value);
+          }}
+        />
       </Modal>
     </div>
   );

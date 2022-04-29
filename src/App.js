@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect} from 'react';
 import {BrowserRouter,Routes,Route} from 'react-router-dom';
 import Register from '../src/components/frontend/auth/Register'
 import Login from '../src/components/frontend/auth/Login/Login'
@@ -8,8 +8,10 @@ import MedalProvider from './components/context/Context';
 import UserInformation from '../src/components/frontend/admin/layout/userInformation/Index'
 import ForgotPassword from '../src/components/frontend/auth/ForgotPassword'
 import MasterLayoutForgotPw from './components/frontend/admin/layout/MasterLayoutForgotPW'
+import { Navigate  } from 'react-router-dom'
 
 function App() {
+
   return (
     <div >
 <BrowserRouter>

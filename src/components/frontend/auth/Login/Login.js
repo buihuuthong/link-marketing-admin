@@ -7,15 +7,13 @@ import "../../../../assets/auth/js/scripts";
 import "../validator/Validator";
 import InputUsername from "./InputLogin/InputUsername";
 import InputPassword from "./InputLogin/InputPassword";
-import Validator from "../validator/Validator.js";
-import { Router } from "react-router";
-import { Button } from "antd";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [accessToken, setAccessToken] = useState('')
-  const [login, setLogin] = useState(null);
+  const [errorUserName, setErrorUserName] = useState(false)
+  const [errorPassWord, setErrorPassWord] = useState(false)
+  const [wrongPassword, setWrongPassword] = useState(false)
   const navigate = useNavigate();
 
   const data = {
@@ -24,6 +22,7 @@ function Login() {
   };
 
   const handleLogin = () => {
+
     axios
       .post("http://113.161.151.124:8082/api/managers/login", data)
       .then(function (response) {
@@ -34,10 +33,10 @@ function Login() {
       .catch(function (error) {
         // handle error
         console.log(error.request);
+        if(error.response.data.code == 'WRONG_PASSWORD'){
+          setWrongPassword(true)
+        }
       })
-      .then(function () {
-        // always executed
-      });
   };
 
   return (
@@ -68,11 +67,7 @@ function Login() {
                               setUsername(e.target.value);
                             }}
                           />
-                          <label id="userName">UserName</label>
-                          <span
-                            className="form-message"
-                            style={"invalid" ? { color: "red" } : null}
-                          ></span>
+                          <label id="userName">Tài khoản</label>
                         </div>
 
                         <div className="form-floating mb-3">
@@ -88,11 +83,10 @@ function Login() {
                             }}
                           />
 
-                          <label id="inputPassword">Password</label>
-                          <span
-                            className="form-message"
-                            style={"invalid" ? { color: "red" } : null}
-                          ></span>
+                          <label id="inputPassword">Mật khẩu</label>
+                          { wrongPassword ? 
+                          <span style={{ color: "red" }}>Sai mật khẩu hoặc tài khoản của bạn không tồn tại!</span>
+                          : null}
                         </div>
 
                         <div className="form-check mb-3">
