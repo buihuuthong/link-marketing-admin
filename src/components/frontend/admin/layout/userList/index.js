@@ -1,18 +1,23 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Table, Space, Modal, Input, Button, Empty } from "antd";
+import { Table, Space, Modal, Input, Button, Tag } from "antd";
 import axios from "axios";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import ReactDOM from "react-dom";
 import "antd/dist/antd.css";
+import UserTask from "../userTask";
+import { useNavigate } from 'react-router-dom'
 
-const ListUser = (index) => {
+const ListUser = () => {
+
+  const navigate = useNavigate();
   const [dataTable, setDataTable] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalTask, setIsModalTask] = useState(false);
   const [editUser, setEditUser] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState();
-  const [Count, setCount] = useState()
+  const [userId, setUserId] = useState('11')
 
   useEffect(() => {
     getDataTable();
@@ -120,6 +125,12 @@ const ListUser = (index) => {
     setEditUser(null);
   };
 
+  const onGetUserTask = (record) => {
+    setIsModalTask(true)
+    // console.log(record.id);
+    setUserId(record.id);
+  }
+
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({
       setSelectedKeys,
@@ -211,9 +222,11 @@ const ListUser = (index) => {
   const columns = [
     {
       title: "STT",
-      dataIndex: "1",
+      dataIndex: "key",
       width: 100,
       align: "center",
+      key: 'index',
+      render : (text, record, index) => index,
     },
     {
       title: "Họ và tên",
@@ -227,7 +240,11 @@ const ListUser = (index) => {
       dataIndex: "gender",
       width: 150,
       align: "center",
-      ...getColumnSearchProps("gender"),
+      render: gender => (
+        <Space key={gender}>
+          {gender == "FEMALE" ? "Nữ" : "Nam"}
+        </Space>
+      ),
     },
     {
       title: "Số điện thoại",
@@ -250,11 +267,28 @@ const ListUser = (index) => {
       key: "x",
       render: (record) => (
         <Space size="middle">
-          <a href="http://localhost:3000/user-information">
-            Thông tin chi tiết
-          </a>
-          <a onClick={() => editUsersTable(record)}>Sửa</a>
-          <a onClick={() => onDeleteUser(record)}>Xóa</a>
+          <div className="row">
+            <div className="mb-2">
+              <Tag color="">
+                <a style={{ marginRight: 10}} href="http://localhost:3000/user-information">
+                Thông tin chi tiết
+              </a>
+              </Tag>
+            </div>
+            <div className="mb-2">
+              <Tag color="blue">
+                <a onClick={() => editUsersTable(record)}>Sửa</a>
+              </Tag>
+              <Tag color="red">
+                <a onClick={() => onDeleteUser(record)}>Xóa</a>
+              </Tag>
+            </div>
+            <div>
+              <Tag color="geekblue">
+                <a onClick={() => onGetUserTask(record)}>Danh sách nhiệm vụ</a>
+              </Tag>
+            </div>
+          </div>
         </Space>
       ),
       align: "center",
@@ -383,8 +417,21 @@ const ListUser = (index) => {
           }}
         />
       </Modal>
+      <Modal
+        title="Danh sách nhiệm vụ"
+        visible={isModalTask}
+        onOk={() => setIsModalTask(false)}
+        onCancel={() => setIsModalTask(false)}
+        okText="Xác nhận"
+        cancelText="Hủy"
+        width={2000}
+        zIndex={2000}
+        centered
+      >
+          <UserTask userId={userId}/>
+      </Modal>
     </div>
   );
-};
+}
 
-export default ListUser;
+export default ListUser

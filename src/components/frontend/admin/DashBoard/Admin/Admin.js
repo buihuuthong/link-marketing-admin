@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Table, Space, Modal, Input, Button, Empty } from "antd";
+import { Table, Space, Modal, Input, Button, Tag } from "antd";
 import axios from "axios";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import ReactDOM from "react-dom";
 import "antd/dist/antd.css";
 
-const Admin = (record) => {
+const Admin = () => {
   const [dataTable, setDataTable] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalPass, setIsModalPass] = useState(false);
   const [modalAddSale, setModalAddSale] = useState(false)
   const [editUser, setEditUser] = useState(null);
   const [searchText, setSearchText] = useState("");
@@ -19,6 +20,8 @@ const Admin = (record) => {
   const [saleFullName, setSaleFullName] = useState('')
   const [saleUserName, setSaleUserName] = useState('')
   const [salePassWord, setSalePassWord] = useState('')
+  const [saleName, setSaleName] = useState('')
+  const [newPassword, setNewPassword] = useState('')
 
   useEffect(() => {
     getDataTable();
@@ -34,6 +37,7 @@ const Admin = (record) => {
       .then(function (response) {
         // handle success
         setDataTable(response.data);
+        console.log(response.data);
       })
       .catch(function (error) {
         // handle error
@@ -48,7 +52,8 @@ const Admin = (record) => {
   const UpdateUser = () => {
     const data = {
       "contactPhone":  editUser.contactPhone,
-      "fullName":  editUser.fullName
+      "fullName":  editUser.fullName,
+      "newPassword": null,
     }
     
     axios
@@ -58,6 +63,35 @@ const Admin = (record) => {
         },
         params: {
           "username": editUser.username,
+        }
+      })
+      .then(function (response) {
+        // handle success
+        console.log("Success");
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error.request);
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
+  const UpdateUserPassword = () => {
+    const data = {
+      "contactPhone":  null,
+      "fullName":  null,
+      "newPassword": newPassword,
+    }
+    
+    axios
+      .patch("http://113.161.151.124:8082/api/managers/sales", data, {
+        headers: {
+          'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
+        },
+        params: {
+          "username": saleName,
         }
       })
       .then(function (response) {
@@ -125,6 +159,32 @@ const Admin = (record) => {
       .then(function (response) {
         // handle success
         console.log("Success");
+        getDataTable()
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error.request);
+      })
+      .then(function () {
+        // always executed
+      });
+  }
+
+  const UnLockedUser = (record) =>{
+    axios
+      .put("http://113.161.151.124:8082/api/managers/sales/lock",{} ,{
+        headers: {
+          'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
+        },
+        params: {
+          "username": record.username,
+          "isLocked": false
+        }
+      })
+      .then(function (response) {
+        // handle success
+        console.log("Success");
+        getDataTable()
       })
       .catch(function (error) {
         // handle error
@@ -147,6 +207,17 @@ const Admin = (record) => {
     });
   }
 
+  const onUnLockedUser = (record) => {
+    Modal.confirm({
+      title: "Bạn có chắc chắn muốn mở khóa tài khoản này?",
+      okText: "Xác nhận",
+      onOk: () => {
+        UnLockedUser(record)
+      },
+      cancelText: "Hủy",
+    });
+  }
+
   const editUsersTable = (record) => {
     setIsModalVisible(true);
     setEditUser({ ...record });
@@ -154,7 +225,13 @@ const Admin = (record) => {
 
   const resetEditing = () => {
     setIsModalVisible(false);
+    setIsModalPass(false)
     setEditUser(null);
+  }
+
+  const onChangePassword = (record) => {
+    setIsModalPass(true);
+    setSaleName(record.username);
   }
 
   const getColumnSearchProps = (dataIndex) => ({
@@ -286,8 +363,10 @@ const Admin = (record) => {
     {
       title: "STT",
       dataIndex: "key",
-      width: 100,
+      width: 50,
       align: "center",
+      key: 'index',
+      render : (text, record, index) => index,
     },
     {
       title: "Tài khoản",
@@ -308,32 +387,56 @@ const Admin = (record) => {
       dataIndex: "role",
       width: 150,
       align: "center",
-      ...getColumnSearchProps("role"),
+      render: role => (
+        <Space key={role}>
+          {role == 'ROLE_ADMIN' ? "Quản trị viên" : "Sale"}
+        </Space>
+      ),
     },
     {
       title: "Trạng thái",
       dataIndex: "isLocked",
-      width: 200,
+      width: 150,
       align: "center",
-      ...getColumnSearchProps("isLocked"),
+      render: isLocked => (
+        <Space key={isLocked}>
+          {isLocked == true ? "Đã khóa" : "Đang hoạt động"}
+        </Space>
+      ),
     },
     {
       title: "Số điện thoại",
       dataIndex: "contactPhone",
-      width: 200,
+      width: 150,
       align: "center",
       ...getColumnSearchProps("contactPhone"),
     },
     {
       title: "Hành động",
-      width: 200,
+      width: 250,
       dataIndex: "",
       key: "x",
       render: (record) => (
         <Space size="middle">
-          <a onClick={() => onLockedUser(record)}>Khóa</a>
-          <a onClick={() => editUsersTable(record)}>Sửa</a>
-          <a onClick={() => onDeleteUser(record)}>Xóa</a>
+          { record.isLocked == true ?
+            <Tag color="green">
+              <a onClick={() => onUnLockedUser(record)}>Mở khóa</a>
+            </Tag>
+          :
+          
+          <Tag color="red">
+            <a onClick={() => onLockedUser(record)}>Khóa</a>
+          </Tag>
+          }
+          <Tag color="blue">
+            <a onClick={() => editUsersTable(record)}>Sửa</a>
+          </Tag>
+          <Tag color="red">
+            <a onClick={() => onDeleteUser(record)}>Xóa</a>
+          </Tag>
+          <Tag color="geekblue">
+            <a onClick={() => onChangePassword(record)}>Đổi mật khẩu</a>
+          </Tag>
         </Space>
       ),
       align: "center",
@@ -455,6 +558,30 @@ const Admin = (record) => {
           onChange={(e) => {
             setSalePhone(e.target.value);
           }}
+        />
+      </Modal>
+
+      {/* Đổi mật khẩu sale */}
+      <Modal
+        title="Sửa thông tin người dùng"
+        visible={isModalPass}
+        onOk={() => {
+          UpdateUserPassword()
+          resetEditing();
+        }}
+        onCancel={() => {
+          resetEditing();
+        }}
+        okText="Xác nhận"
+        cancelText="Hủy"
+      >
+
+        <label>
+          <p style={{ marginTop: 5 }}>Mật khẩu mới:</p>
+        </label>
+        <Input
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
         />
       </Modal>
     </div>

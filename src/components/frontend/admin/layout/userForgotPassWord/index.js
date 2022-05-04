@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Table, Space, Modal, Input, Button, Empty } from "antd";
+import { Table, Space, Modal, Input, Button, Tag } from "antd";
 import axios from "axios";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
@@ -9,9 +9,12 @@ import "antd/dist/antd.css";
 const UserForgotPassWord = () => {
   const [dataTable, setDataTable] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [editUser, setEditUser] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState();
+  const [newPassword, setNewPassword] = useState('')
+  const [userId, setUserId] = useState('')
+  const [id, setId] = useState('')
+  const [isChanged, setIsChanged] = useState(false)
 
   useEffect(() => {
     getDataTable();
@@ -38,82 +41,65 @@ const UserForgotPassWord = () => {
   };
 
 
-  const UpdateUser = () => {
+  const onChangeUserPassword = () => {
+    console.log(userId);
     const data = {
-      "contactPhone":  editUser.contactPhone,
-      "fullName":  editUser.fullName
+      "newPassword": newPassword,
+      "userId": userId
     }
     
     axios
-      .patch("http://113.161.151.124:8082/api/managers/sales", data, {
+      .put("http://113.161.151.124:8082/api/password-reset/users/reset-password", data, {
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
-        },
-        params: {
-          "username": editUser.username,
         }
       })
       .then(function (response) {
         // handle success
         console.log("Success");
+        axios
+          .put("http://113.161.151.124:8082/api/password-reset/users/mark-changed", {}, {
+            headers: {
+              'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
+            },
+            params: {
+              "id": id
+            }
+          })
+          .then(function (response) {
+            // handle success
+            console.log("Success");
+            getDataTable()
+            setIsChanged(true)
+          })
+          .catch(function (error) {
+            // handle error
+            console.log(error.request);
+          })
       })
       .catch(function (error) {
         // handle error
         console.log(error.request);
       })
-      .then(function () {
-        // always executed
-      });
   };
 
-  const DeleteUser = (record) => {
-    
-    axios
-      .delete("http://113.161.151.124:8082/api/managers/sales", {
-        headers: {
-          'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
-        },
-        params: {
-          "username": record.username,
-        }
-      })
-      .then(function (response) {
-        // handle success
-        console.log("Success");
-      })
-      .catch(function (error) {
-        // handle error
-        console.log(error.request);
-      })
-      .then(function () {
-        // always executed
-      });
-  };
-
-  const onDeleteUser = (record) => {
-    Modal.confirm({
-      title: "Bạn có chắc chắn muốn xóa người dùng này?",
-      okText: "Xác nhận",
-      okType: "danger",
-      onOk: () => {
-        setDataTable((pre) => {
-          return pre.filter((user) => user.id !== record.id);
-        });
-        DeleteUser(record)
-      },
-      cancelText: "Hủy",
-    });
-  };
-
-  const editUsersTable = (record) => {
+  const onChangePassword = (record) => {
     setIsModalVisible(true);
-    setEditUser({ ...record });
-  };
+    setUserId(record.userId);
+    setId(record.id);
+  }
 
   const resetEditing = () => {
     setIsModalVisible(false);
-    setEditUser(null);
   };
+
+  const onChanged = (record) => {
+    Modal.confirm({
+      title: "Người dùng " + record.userFullName + " đã được đổi mật khẩu!",
+      okText: "Xác nhận",
+      cancelText: "Hủy",
+    });
+  }
 
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({
@@ -174,11 +160,6 @@ const UserForgotPassWord = () => {
             .toLowerCase()
             .includes(value.toLowerCase())
         : "",
-    // onFilterDropdownVisibleChange: visible => {
-    //   if (visible) {
-    //     setTimeout(() => searchInput.select(), 100);
-    //   }
-    // },
     render: (text) =>
       searchedColumn === dataIndex ? (
         <Highlighter
@@ -206,9 +187,11 @@ const UserForgotPassWord = () => {
   const columns = [
     {
       title: "STT",
-      dataIndex: "1",
+      dataIndex: "key",
       width: 100,
       align: "center",
+      key: 'index',
+      render : (text, record, index) => index,
     },
     {
       title: "Họ và tên",
@@ -229,7 +212,11 @@ const UserForgotPassWord = () => {
       dataIndex: "status",
       width: 200,
       align: "center",
-      ...getColumnSearchProps("status"),
+      render: status => (
+        <Space key={status}>
+          {status == "CHANGED" ? "Đang xử lí" : status == "DONE" ? "Đã xong" : status == "PENDING" ? "Yêu cầu thay đổi" : null}
+        </Space>
+      ),
     },
     {
       title: "Lưu ý",
@@ -244,11 +231,15 @@ const UserForgotPassWord = () => {
       key: "x",
       render: (record) => (
         <Space size="middle">
-          <a href="http://localhost:3000/user-information">
-            Thông tin chi tiết
-          </a>
-          <a onClick={() => editUsersTable(record)}>Sửa</a>
-          <a onClick={() => onDeleteUser(record)}>Xóa</a>
+          { record.status == "CHANGED" ?
+          <Tag color="green">
+            <a onClick={() => onChanged(record)}>Đã đổi mật khẩu</a>
+          </Tag>
+          :
+          <Tag color="blue">
+            <a onClick={() => onChangePassword(record)}>Đổi mật khẩu</a>
+          </Tag>
+          }
         </Space>
       ),
       align: "center",
@@ -275,18 +266,7 @@ const UserForgotPassWord = () => {
         title="Sửa thông tin người dùng"
         visible={isModalVisible}
         onOk={() => {
-          setDataTable((pre) => {
-            return pre.map((user) => {
-              if (user.id === editUser.id) {
-                setTimeout(() => {
-                  UpdateUser()
-                }, 1000);
-                return editUser;
-              } else {
-                return user;
-              }
-            });
-          });
+          onChangeUserPassword()
           resetEditing();
         }}
         onCancel={() => {
@@ -295,76 +275,14 @@ const UserForgotPassWord = () => {
         okText="Xác nhận"
         cancelText="Hủy"
       >
-        {/* <label>
-          <p style={{ marginTop: 5 }}>Tài khoản: {}</p>
-        </label>
-        <Input
-          value={editUser?.username}
-          onChange={(e) => {
-            setEditUser((pre) => {
-              return { ...pre, username: e.target.value };
-            });
-          }}
-        /> */}
 
         <label>
-          <p style={{ marginTop: 5 }}>Họ và Tên: {}</p>
+          <p style={{ marginTop: 5 }}>Mật khẩu mới:</p>
         </label>
         <Input
-          value={editUser?.fullName}
-          onChange={(e) => {
-            setEditUser((pre) => {
-              return { ...pre, fullName: e.target.value };
-            });
-          }}
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
         />
-
-        {/* <label>
-          <p style={{ marginTop: 5 }}>Chức vụ: {}</p>
-        </label>
-        <Input
-          value={editUser?.role}
-          onChange={(e) => {
-            setEditUser((pre) => {
-              return { ...pre, role: e.target.value };
-            });
-          }}
-        /> */}
-
-        {/* <label>
-          <p style={{ marginTop: 5 }}>Trạng thái:</p>
-        </label>
-        <div>
-          <select 
-            value={editUser?.isLocked}
-            onChange={(e) => {
-              setEditUser((pre) => {
-                return { ...pre, isLocked: e.target.value };
-              });
-            }}
-            style={{
-              width: '100%',
-              padding: 5,
-              borderColor: '#E0E0E0'
-            }}
-          >
-            <option value={true}>Đã khóa</option>
-            <option value={false}>Đang hoạt động</option>
-          </select>
-        </div> */}
-
-        <label>
-          <p style={{ marginTop: 5 }}>Số điện thoại:</p>
-        </label>
-        <Input
-          value={editUser?.contactPhone}
-          onChange={(e) => {
-            setEditUser((pre) => {
-              return { ...pre, contactPhone: e.target.value };
-            });
-          }}
-        />
-
       </Modal>
     </div>
   );
