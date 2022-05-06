@@ -27,6 +27,7 @@ function Login() {
       .post("http://113.161.151.124:8082/api/managers/login", data)
       .then(function (response) {
         // handle success
+        console.log("Success");
         window.sessionStorage.setItem('token', response.data.accessToken)
         navigate('/admin')
       })

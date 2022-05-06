@@ -1,4 +1,5 @@
 import React from "react";
+import {Link} from 'react-router-dom'
 import "../../../../assets/auth/css/styles.css";
 import "../../../../assets/auth/js/scripts";
 const Sidebar = () => {
@@ -6,9 +7,9 @@ const Sidebar = () => {
     <div className="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
       <div className="sb-sidenav-menu">
         <div className="nav">
-          <a
+          <Link
             className="nav-a"
-            href="/admin"
+            to="/admin"
             style={{ textAlign: "center", padding: "10px 0" }}
           >
             <div className="sb-nav-link-icon">
@@ -16,11 +17,11 @@ const Sidebar = () => {
               <i className="fa-solid fa-chart-mixed"></i>
             </div>{" "}
             Admin quản lí Sale
-          </a>
+          </Link>
 
-          <a
+          <Link
             className="nav-a"
-            href="/admin-user"
+            to="/admin/admin-user"
             style={{ textAlign: "center", padding: "10px 0" }}
           >
             <div className="sb-nav-link-icon">
@@ -28,11 +29,11 @@ const Sidebar = () => {
               <i className="fa-solid fa-chart-mixed"></i>
             </div>{" "}
             Sale quản lí người dùng
-          </a>
+          </Link>
           
-          <a
+          <Link
             className="nav-a"
-            href="/user-forgot-password"
+            to="/admin/user-forgot-password"
             style={{ textAlign: "center", padding: "10px 0" }}
           >
             <div className="sb-nav-link-icon">
@@ -40,7 +41,19 @@ const Sidebar = () => {
               <i className="fa-solid fa-chart-mixed"></i>
             </div>{" "}
             Người dùng quên mật khẩu
-          </a>
+          </Link>
+          
+          <Link
+            className="nav-a"
+            to="/admin/transaction"
+            style={{ textAlign: "center", padding: "10px 0" }}
+          >
+            <div className="sb-nav-link-icon">
+              {" "}
+              <i className="fa-solid fa-chart-mixed"></i>
+            </div>{" "}
+            Quản lí giao dịch
+          </Link>
         </div>
       </div>
     </div>

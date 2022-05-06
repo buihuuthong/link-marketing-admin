@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Table, Space, Modal, Input, Button, Tag } from "antd";
 import axios from "axios";
 import { SearchOutlined } from "@ant-design/icons";
@@ -11,32 +11,35 @@ const UserTask = (userId) => {
   const [isModalEditTask, setIsModalEditTask] = useState(false);
   const [isModalAddTask, setIsModalAddTask] = useState(false);
   const [isModalChangeStatus, setIsModalChangeStatus] = useState(false);
+  const [isModalUploadFile, setIsModalUploadFile] = useState(false);
   const [editTask, setEditTask] = useState(null);
 
   //add task
-  const [commissionPercentage, setCommissionPercentage] = useState(0)
-  const [description, setDescription] = useState('')
-  const [originalPrice, setOriginalPrice] = useState(0)
-  const [productLink, setProductLink] = useState('')
-  const [productName, setProductName] = useState('')
-  const [receivedPoint, setReceivedPoint] = useState(0)
-  const [unlockPrice, setUnlockPrice] = useState(0)
-  const [status, setStatus] = useState('')
-  const [taskId, setTaskId] = useState('')
+  const [commissionPercentage, setCommissionPercentage] = useState(0);
+  const [description, setDescription] = useState("");
+  const [originalPrice, setOriginalPrice] = useState(0);
+  const [productLink, setProductLink] = useState("");
+  const [productName, setProductName] = useState("");
+  const [receivedPoint, setReceivedPoint] = useState(0);
+  const [unlockPrice, setUnlockPrice] = useState(0);
+  const [status, setStatus] = useState("");
+  const [taskId, setTaskId] = useState("");
+  //add image
+  const [imageFile, setImageFile] = useState("");
 
   useEffect(() => {
     getDataTable();
-  },[userId]);
-  
+  }, [userId]);
+
   const getDataTable = () => {
     axios
       .get("http://113.161.151.124:8082/api/tasks", {
         headers: {
-          'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
+          Authorization: `Bearer ${window.sessionStorage.getItem("token")}`,
         },
         params: {
-            'userId': userId.userId
-        }
+          userId: userId.userId,
+        },
       })
       .then(function (response) {
         // handle success
@@ -51,26 +54,25 @@ const UserTask = (userId) => {
       });
   };
 
-
   const UpdateUser = () => {
     const data = {
-      "commissionPercentage": editTask.commissionPercentage,
-      "description": editTask.description,
-      "originalPrice": editTask.originalPrice,
-      "productLink": editTask.productLink,
-      "productName": editTask.productName,
-      "receivedPoint": editTask.receivedPoint,
-      "unlockPrice": editTask.unlockPrice
-    }
-    
+      commissionPercentage: editTask.commissionPercentage,
+      description: editTask.description,
+      originalPrice: editTask.originalPrice,
+      productLink: editTask.productLink,
+      productName: editTask.productName,
+      receivedPoint: editTask.receivedPoint,
+      unlockPrice: editTask.unlockPrice,
+    };
+
     axios
       .patch("http://113.161.151.124:8082/api/tasks", data, {
         headers: {
-          'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
+          Authorization: `Bearer ${window.sessionStorage.getItem("token")}`,
         },
         params: {
-          "id": editTask.id,
-        }
+          id: editTask.id,
+        },
       })
       .then(function (response) {
         // handle success
@@ -86,15 +88,14 @@ const UserTask = (userId) => {
   };
 
   const DeleteTask = (record) => {
-    
     axios
       .delete("http://113.161.151.124:8082/api/tasks", {
         headers: {
-          'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
+          Authorization: `Bearer ${window.sessionStorage.getItem("token")}`,
         },
         params: {
-          "id": record.id,
-        }
+          id: record.id,
+        },
       })
       .then(function (response) {
         // handle success
@@ -118,10 +119,10 @@ const UserTask = (userId) => {
         setDataTable((pre) => {
           return pre.filter((user) => user.id !== record.id);
         });
-        DeleteTask(record)
+        DeleteTask(record);
       },
       cancelText: "Hủy",
-      zIndex: 2147483647
+      zIndex: 2147483647,
     });
   };
 
@@ -137,29 +138,29 @@ const UserTask = (userId) => {
 
   const handleOk = () => {
     const data = {
-      "commissionPercentage": commissionPercentage,
-      "description": description,
-      "originalPrice": originalPrice,
-      "productLink": productLink,
-      "productName": productName,
-      "receivedPoint": receivedPoint,
-      "unlockPrice": unlockPrice
-    }
-    
+      commissionPercentage: commissionPercentage,
+      description: description,
+      originalPrice: originalPrice,
+      productLink: productLink,
+      productName: productName,
+      receivedPoint: receivedPoint,
+      unlockPrice: unlockPrice,
+    };
+
     axios
       .post("http://113.161.151.124:8082/api/tasks", data, {
         headers: {
-          'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
+          Authorization: `Bearer ${window.sessionStorage.getItem("token")}`,
         },
         params: {
-            'userId': userId.userId
-        }
+          userId: userId.userId,
+        },
       })
       .then(function (response) {
         // handle success
         console.log("Success");
-        setIsModalAddTask(false)
-        getDataTable()
+        setIsModalAddTask(false);
+        getDataTable();
       })
       .catch(function (error) {
         // handle error
@@ -175,25 +176,30 @@ const UserTask = (userId) => {
   };
 
   const onChangeStatus = (record) => {
-    setIsModalChangeStatus(true)
-    setTaskId(record.id)
-  }
+    setIsModalChangeStatus(true);
+    setTaskId(record.id);
+  };
 
   const ChangeTaskStatus = () => {
     axios
-      .patch("http://113.161.151.124:8082/api/tasks", {}, {
-        headers: {
-          'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
-        },
-        params: {
-          "id": taskId,
-          "status": status
+      .put(
+        "http://113.161.151.124:8082/api/tasks/change-status",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${window.sessionStorage.getItem("token")}`,
+          },
+          params: {
+            id: taskId,
+            status: status,
+          },
         }
-      })
+      )
       .then(function (response) {
         // handle success
         console.log("Success");
         setIsModalChangeStatus(false);
+        getDataTable()
       })
       .catch(function (error) {
         // handle error
@@ -204,9 +210,53 @@ const UserTask = (userId) => {
       });
   };
 
-  const onOverviewTask = (record) => {
-    
-  }
+  const onFileChange = (event) => {
+    // Update the state
+    setImageFile(event.target.files[0]);
+  };
+
+  const onFileUpload = () => {
+
+    const formData = new FormData();
+
+    // Update the formData object
+    formData.append("image ", imageFile);
+
+    console.log(formData);
+
+    axios
+      .put(
+        "http://113.161.151.124:8082/api/tasks/product-image",
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${window.sessionStorage.getItem("token")}`,
+          },
+          params: {
+            id: taskId,
+          },
+        }
+      )
+      .then(function (response) {
+        // handle success
+        console.log("Success");
+        setIsModalUploadFile(false);
+        getDataTable();
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error.request);
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
+  const onAddImageFile = (record) => {
+    setIsModalUploadFile(true);
+    setTaskId(record.id);
+  };
 
   const columns = [
     {
@@ -214,8 +264,8 @@ const UserTask = (userId) => {
       dataIndex: "key",
       width: 100,
       align: "center",
-      key: 'index',
-      render : (text, record, index) => index,
+      key: "index",
+      render: (text, record, index) => index,
     },
     {
       title: "Tên sản phẩm",
@@ -227,11 +277,19 @@ const UserTask = (userId) => {
       title: "Mô tả",
       dataIndex: "description",
       align: "center",
+      width: 200,
     },
     {
       title: "Hình ảnh",
       dataIndex: "productImage",
       align: "center",
+      render: productImage => (
+        <Space key={productImage}>
+          { productImage == null ?
+          null : <img style={{ width: 200, height: 200 }} src={"http://113.161.151.124:8081/images/"+ productImage}/>
+          }
+        </Space>
+      ),
     },
     {
       title: "Liên kết sản phẩm",
@@ -242,6 +300,15 @@ const UserTask = (userId) => {
       title: "Trạng thái",
       dataIndex: "status",
       align: "center",
+      render: status => (
+        <Space key={status}>
+          {status == 'DOING' ? "Đang chờ" :
+            status == 'DONE' ? "Đã xong" :
+            status == 'REJECTED' ? "Đã hủy" :
+            status == 'IN_REVIEW' ? "Đang xử lí" : null
+          }
+        </Space>
+      ),
     },
     {
       title: "Giá gốc",
@@ -270,7 +337,7 @@ const UserTask = (userId) => {
       render: (record) => (
         <Space size="middle">
           <div className="row">
-            <div className="mb-2">
+            <div className="mb-1">
               <Tag color="blue">
                 <a onClick={() => editTaskTable(record)}>Sửa</a>
               </Tag>
@@ -278,14 +345,14 @@ const UserTask = (userId) => {
                 <a onClick={() => onDeleteTask(record)}>Xóa</a>
               </Tag>
             </div>
-            <div className="mb-2">
+            <div className="mb-1">
               <Tag color="geekblue">
                 <a onClick={() => onChangeStatus(record)}>Đổi trạng thái</a>
               </Tag>
             </div>
-            <div>
-              <Tag color="geekblue">
-                <a onClick={() => onOverviewTask(record)}>Thống kê nhiệm vụ</a>
+            <div >
+              <Tag color="green">
+                <a onClick={() => onAddImageFile(record)}>Thêm hình ảnh</a>
               </Tag>
             </div>
           </div>
@@ -302,11 +369,7 @@ const UserTask = (userId) => {
         margin: 20,
       }}
     >
-      
-      <Button 
-        type="primary"
-        onClick={() => setIsModalAddTask(true)}
-      >
+      <Button type="primary" onClick={() => setIsModalAddTask(true)}>
         ✖️Thêm nhiệm vụ
       </Button>
 
@@ -315,7 +378,7 @@ const UserTask = (userId) => {
         dataSource={dataTable}
         // loading={dataTable == "" ? true : false}
         noDataText="Không có dữ liệu"
-        locale={{emptyText: "Không có dữ liệu"}}
+        locale={{ emptyText: "Không có dữ liệu" }}
       />
 
       {/* Modal */}
@@ -327,7 +390,7 @@ const UserTask = (userId) => {
             return pre.map((user) => {
               if (user.id === editTask.id) {
                 setTimeout(() => {
-                  UpdateUser()
+                  UpdateUser();
                 }, 1000);
                 return editTask;
               } else {
@@ -416,7 +479,7 @@ const UserTask = (userId) => {
             });
           }}
         />
-        
+
         <label>
           <p style={{ marginTop: 5 }}>Hoa hồng:</p>
         </label>
@@ -432,11 +495,11 @@ const UserTask = (userId) => {
 
       {/* Modal thêm nhiệm vụ */}
 
-      <Modal 
-        title="Basic Modal" 
-        visible={isModalAddTask} 
-        onOk={handleOk} 
-        onCancel={handleCancel} 
+      <Modal
+        title="Basic Modal"
+        visible={isModalAddTask}
+        onOk={handleOk}
+        onCancel={handleCancel}
         zIndex={2147483647}
         centered
       >
@@ -487,7 +550,7 @@ const UserTask = (userId) => {
           value={receivedPoint}
           onChange={(e) => setReceivedPoint(e.target.value)}
         />
-        
+
         <label>
           <p style={{ marginTop: 5 }}>Hoa hồng:</p>
         </label>
@@ -498,7 +561,7 @@ const UserTask = (userId) => {
       </Modal>
 
       {/* Đổi trạng thái */}
-      
+
       <Modal
         title="Danh sách nhiệm vụ"
         visible={isModalChangeStatus}
@@ -513,13 +576,13 @@ const UserTask = (userId) => {
           <p style={{ marginTop: 5 }}>Trạng thái:</p>
         </label>
         <div>
-          <select 
+          <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
             style={{
-              width: '100%',
+              width: "100%",
               padding: 5,
-              borderColor: '#E0E0E0'
+              borderColor: "#E0E0E0",
             }}
           >
             <option value="DOING">Đang chờ</option>
@@ -527,6 +590,27 @@ const UserTask = (userId) => {
             <option value="REJECTED">Đã hủy</option>
           </select>
         </div>
+      </Modal>
+
+      {/* Thêm hình ảnh */}
+
+      <Modal
+        title="Thêm hình ảnh"
+        visible={isModalUploadFile}
+        onOk={() => onFileUpload()}
+        onCancel={() => setIsModalUploadFile(false)}
+        okText="Xác nhận"
+        cancelText="Hủy"
+        zIndex={2000}
+        centered
+      >
+        <label>
+          <p style={{ marginTop: 5 }}>Hoa hồng:</p>
+        </label>
+        <Input
+          type="file"
+          onChange={onFileChange}
+        />
       </Modal>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Table, Space, Modal, Input, Button, Tag } from "antd";
 import axios from "axios";
 import { SearchOutlined } from "@ant-design/icons";
@@ -14,10 +14,12 @@ const ListUser = () => {
   const [dataTable, setDataTable] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalTask, setIsModalTask] = useState(false);
+  const [isModalOverviewTask, setIsModalOverviewTask] = useState(false)
   const [editUser, setEditUser] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState();
-  const [userId, setUserId] = useState('11')
+  const [userId, setUserId] = useState('')
+  const [dataTaskOverview, setDataTaskOverview] = useState([])
 
   useEffect(() => {
     getDataTable();
@@ -33,6 +35,30 @@ const ListUser = () => {
       .then(function (response) {
         // handle success
         setDataTable(response.data);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
+  const getDataTaskOverview = (record) => {
+    axios
+      .get("http://113.161.151.124:8082/api/tasks/overview", {
+        headers: {
+          'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
+        },
+        params: {
+          "id": record.id,
+        }
+      })
+      .then(function (response) {
+        // handle success
+        setDataTaskOverview(response.data);
+        console.log(response.data);
       })
       .catch(function (error) {
         // handle error
@@ -129,6 +155,11 @@ const ListUser = () => {
     setIsModalTask(true)
     // console.log(record.id);
     setUserId(record.id);
+  }
+
+  const onOverviewUserTask = (record) => {
+    setIsModalOverviewTask(true)
+    getDataTaskOverview(record)
   }
 
   const getColumnSearchProps = (dataIndex) => ({
@@ -268,14 +299,14 @@ const ListUser = () => {
       render: (record) => (
         <Space size="middle">
           <div className="row">
-            <div className="mb-2">
+            <div className="mb-1">
               <Tag color="">
                 <a style={{ marginRight: 10}} href="http://localhost:3000/user-information">
                 Thông tin chi tiết
               </a>
               </Tag>
             </div>
-            <div className="mb-2">
+            <div className="mb-1">
               <Tag color="blue">
                 <a onClick={() => editUsersTable(record)}>Sửa</a>
               </Tag>
@@ -283,9 +314,14 @@ const ListUser = () => {
                 <a onClick={() => onDeleteUser(record)}>Xóa</a>
               </Tag>
             </div>
-            <div>
+            <div className="mb-1">
               <Tag color="geekblue">
                 <a onClick={() => onGetUserTask(record)}>Danh sách nhiệm vụ</a>
+              </Tag>
+            </div>
+            <div>
+              <Tag color="geekblue">
+                <a onClick={() => onOverviewUserTask(record)}>Thống kê nhiệm vụ</a>
               </Tag>
             </div>
           </div>
@@ -417,18 +453,45 @@ const ListUser = () => {
           }}
         />
       </Modal>
+
       <Modal
         title="Danh sách nhiệm vụ"
         visible={isModalTask}
         onOk={() => setIsModalTask(false)}
         onCancel={() => setIsModalTask(false)}
-        okText="Xác nhận"
+        okText="Đóng"
         cancelText="Hủy"
         width={2000}
         zIndex={2000}
         centered
       >
           <UserTask userId={userId}/>
+      </Modal>
+
+      <Modal
+        title="Thống kê nhiệm vụ"
+        visible={isModalOverviewTask}
+        onOk={() => setIsModalOverviewTask(false)}
+        onCancel={() => setIsModalOverviewTask(false)}
+        okText="Đóng"
+        cancelText="Hủy"
+        zIndex={2000}
+        centered
+      >
+        <div>
+          <div>
+            <label style={{ fontWeight:"bold"}}>Số nhiệm vụ: </label>
+            <span> {dataTaskOverview.count}</span>
+          </div>
+          <div>
+            <label style={{ fontWeight:"bold"}}>Hoa hồng: </label> 
+            <span> {dataTaskOverview.totalCommission}</span>
+          </div>
+          <div>
+            <label style={{ fontWeight:"bold"}}>Bonus: </label>
+            <span> {dataTaskOverview.totalBonus}</span>
+          </div>
+        </div>
       </Modal>
     </div>
   );

@@ -4,7 +4,7 @@ import "../../../../assets/auth/js/scripts";
 const Navbar = () => {
   return (
     <div className="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-      <a className="navbar-brand ps-3" href="index.html">
+      <a className="navbar-brand ps-3" href="/admin">
         Tiếp thị liên kết
       </a>
 
