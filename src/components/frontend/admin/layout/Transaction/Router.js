@@ -8,7 +8,7 @@ import Bonus from "./router/bonus";
 const Router = () => {
   return (
     <Routes>
-        <Route path="/" element={<AgentDeposite />} />
+        <Route path="/agent-deposite" element={<AgentDeposite />} />
         <Route path="/task-deposite" element={<TaskDeposite />} />
         <Route path="/withdraw" element={<WithDraw />} />
         <Route path="/bonus" element={<Bonus />} />

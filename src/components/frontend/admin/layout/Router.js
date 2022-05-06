@@ -11,7 +11,7 @@ const Router = () => {
         <Route path="/" element={<Admin />} />
         <Route path="/admin-user" element={<ListUser />} />
         <Route path="/user-forgot-password" element={<UserForgotPassWord />}/>
-        <Route path="/transaction" element={<Transaction />}/>
+        <Route path="/transaction/*" element={<Transaction />}/>
     </Routes>
   );
 }

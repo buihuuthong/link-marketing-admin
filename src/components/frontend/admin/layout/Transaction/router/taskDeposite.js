@@ -63,9 +63,39 @@ const TaskDeposite = () => {
       align: "center",
     },
     {
-      title: "Công việc",
+      title: "Loại",
       width: 200,
-      dataIndex: "job",
+      dataIndex: "type",
+      align: "center",
+    },
+    {
+      title: "Số tiền",
+      width: 200,
+      dataIndex: "amount",
+      align: "center",
+    },
+    {
+      title: "Hình thức giao dịch",
+      width: 200,
+      dataIndex: "paymentType",
+      align: "center",
+    },
+    {
+      title: "Trạng thái",
+      width: 200,
+      dataIndex: "status",
+      align: "center",
+    },
+    {
+      title: "Lưu ý",
+      width: 200,
+      dataIndex: "note",
+      align: "center",
+    },
+    {
+      title: "Lý do hủy",
+      width: 200,
+      dataIndex: "rejectReason",
       align: "center",
     },
     {
@@ -90,7 +120,7 @@ const TaskDeposite = () => {
       align: "center",
     },
   ];
-
+  
   return (
     <div
       style={{

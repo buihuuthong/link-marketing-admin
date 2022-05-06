@@ -16,7 +16,7 @@ const Sidebar = () => {
               {" "}
               <i className="fa-solid fa-chart-mixed"></i>
             </div>{" "}
-            Admin quản lí Sale
+            Quản lí Sale
           </Link>
 
           <Link
@@ -28,7 +28,7 @@ const Sidebar = () => {
               {" "}
               <i className="fa-solid fa-chart-mixed"></i>
             </div>{" "}
-            Sale quản lí người dùng
+            Quản lí người dùng
           </Link>
           
           <Link
@@ -40,12 +40,12 @@ const Sidebar = () => {
               {" "}
               <i className="fa-solid fa-chart-mixed"></i>
             </div>{" "}
-            Người dùng quên mật khẩu
+            Quản lí mật khẩu
           </Link>
           
           <Link
             className="nav-a"
-            to="/admin/transaction"
+            to="/admin/transaction/agent-deposite"
             style={{ textAlign: "center", padding: "10px 0" }}
           >
             <div className="sb-nav-link-icon">
