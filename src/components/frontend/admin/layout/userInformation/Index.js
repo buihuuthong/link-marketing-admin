@@ -12,8 +12,9 @@ import "./user.css";
 
 // import './user.scss';
 
-const UserInformation = () => {
+const UserInformation = (userId) => {
   const navigate = useNavigate();
+  console.log(userId);
 
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",

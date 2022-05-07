@@ -300,8 +300,8 @@ const ListUser = () => {
         <Space size="middle">
           <div className="row">
             <div className="mb-1">
-              <Tag color="">
-                <a style={{ marginRight: 10}} href="http://localhost:3000/user-information">
+              <Tag color="green" onClick={() => navigate('/user-information', { userId: userId })}>
+                <a style={{ marginRight: 10}}>
                 Thông tin chi tiết
               </a>
               </Tag>

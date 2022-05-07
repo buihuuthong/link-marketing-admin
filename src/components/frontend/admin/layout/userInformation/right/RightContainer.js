@@ -53,11 +53,11 @@ const RightInformation = () => {
                       <p>Số dư: 100000000000 VND</p>
                     </div>
                     <div class="row justify-content-center mt-3">
-                        <button className="first-button" onclick="#" style={button}>
+                        <button className="first-button" onClick="#" style={button}>
                           Cộng tiền
                         </button>
                         <p style={{ width: '20%'}}/>
-                        <button className="second-button" onclick="#" style={button}>
+                        <button className="second-button" onClick="#" style={button}>
                           Trừ tiền
                         </button>
                     </div>

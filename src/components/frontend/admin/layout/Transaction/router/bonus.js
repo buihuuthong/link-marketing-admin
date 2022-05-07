@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Table, Space, Modal, Input, Button, Tag } from "antd";
 import axios from "axios";
-import { SearchOutlined } from "@ant-design/icons";
-import Highlighter from "react-highlight-words";
-import ReactDOM from "react-dom";
 import "antd/dist/antd.css";
-import UserTask from "../../userTask";
 import { useNavigate } from 'react-router-dom'
 
 const Bonus = () => {
 
   const navigate = useNavigate();
   const [dataTable, setDataTable] = useState([]);
+  const [isModalBonusMoney, setIsModalBonusMoney] = useState(false)
+  const [isModalDeductionMoney, setIsModalDeductionMoney] = useState(false)
+  const [amount , setAmount] = useState(0)
+  const [reason, setReason] = useState('')
+  const [userId, setUserId] = useState('')
 
   useEffect(() => {
     getDataTable();
@@ -19,7 +20,7 @@ const Bonus = () => {
 
   const getDataTable = () => {
     axios
-      .get("http://113.161.151.124:808/api/transactions", {
+      .get("http://113.161.151.124:8082/api/transactions", {
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
         },
@@ -34,12 +35,73 @@ const Bonus = () => {
       })
       .catch(function (error) {
         // handle error
-        console.log(error);
+        console.log(error.request);
       })
       .then(function () {
         // always executed
       });
   };
+
+  const Bonus = () => {
+    axios
+      .post("http://113.161.151.124:8082/api/transactions/bonus", {}, {
+        headers: {
+          'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
+        },
+        params: {
+            "userId": userId,
+            "amount": amount,
+            "reason": reason
+        }
+      })
+      .then(function (response) {
+        // handle success
+        setDataTable(response.data);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error.request);
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
+  const Deduction = () => {
+    axios
+      .post("http://113.161.151.124:8082/api/transactions/bonus", {}, {
+        headers: {
+          'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
+        },
+        params: {
+            "userId": userId,
+            "amount": amount,
+            "reason": reason
+        }
+      })
+      .then(function (response) {
+        // handle success
+        setDataTable(response.data);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error.request);
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
+
+  const onBonus = (record) => {
+    setIsModalBonusMoney(true);
+    setUserId(record.userId);
+  }
+
+  const onDeduction = (record) => {
+    setIsModalDeductionMoney(true);
+    setUserId(record.userId);
+  }
 
   const columns = [
     {
@@ -108,10 +170,10 @@ const Bonus = () => {
           <div className="row">
             <div className="mb-1">
               <Tag color="blue">
-                <a onClick={() => {}}>Sửa</a>
+                <a onClick={() => onBonus(record)}>Thưởng tiền</a>
               </Tag>
               <Tag color="red">
-                <a onClick={() => {}}>Xóa</a>
+                <a onClick={() => onDeduction(record)}>Trừ tiền</a>
               </Tag>
             </div>
           </div>
@@ -135,6 +197,52 @@ const Bonus = () => {
         noDataText="Không có dữ liệu"
         locale={{emptyText: "Không có dữ liệu"}}
       />
+
+      <Modal
+        title="Thưởng tiền"
+        visible={isModalBonusMoney}
+        onOk={() => Bonus()}
+        onCancel={() => setIsModalBonusMoney(false)}
+        okText="Xác nhận"
+        cancelText="Hủy"
+        zIndex={2000}
+        centered
+      >
+        <label>Số tiền: </label>
+        <Input
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+        />
+
+        <label>Lí do: </label>
+        <Input
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+        />
+      </Modal>
+
+      <Modal
+        title="Trừ tiền"
+        visible={isModalDeductionMoney}
+        onOk={() => Deduction()}
+        onCancel={() => setIsModalDeductionMoney(false)}
+        okText="Xác nhận"
+        cancelText="Hủy"
+        zIndex={2000}
+        centered
+      >
+        <label>Số tiền: </label>
+        <Input
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+        />
+
+        <label>Lí do: </label>
+        <Input
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+        />
+      </Modal>
     </div>
   );
 }

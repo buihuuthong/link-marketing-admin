@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Table, Space, Modal, Input, Button, Tag } from "antd";
 import axios from "axios";
-import { SearchOutlined } from "@ant-design/icons";
-import Highlighter from "react-highlight-words";
-import ReactDOM from "react-dom";
 import "antd/dist/antd.css";
-import UserTask from "../../userTask";
 import { useNavigate } from 'react-router-dom'
 
 const AgentDeposite = () => {
 
   const navigate = useNavigate();
   const [dataTable, setDataTable] = useState([]);
+  const [isModalRejectTransaction, setIsModalRejectTransaction] = useState(false)
+  const [reasonReject, setReasonReject] = useState('')
+  const [id, setId] = useState('')
 
   useEffect(() => {
     getDataTable();
@@ -19,7 +18,7 @@ const AgentDeposite = () => {
 
   const getDataTable = () => {
     axios
-      .get("http://113.161.151.124:808/api/transactions", {
+      .get("http://113.161.151.124:8082/api/transactions", {
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
         },
@@ -34,12 +33,70 @@ const AgentDeposite = () => {
       })
       .catch(function (error) {
         // handle error
-        console.log(error);
+        console.log(error.request);
       })
       .then(function () {
         // always executed
       });
   };
+  
+  const onAcceptTransaction = (record) => {
+    console.log(record.id);
+    axios
+      .put("http://113.161.151.124:8082/api/transactions/deposite", {}, {
+        headers: {
+          'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
+        },
+        params: {
+            "id": record.id,
+            "isRejected": false
+        }
+      })
+      .then(function (response) {
+        // handle success
+        console.log("Success!");
+        getDataTable();
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error.request);
+      })
+      .then(function () {
+        // always executed
+      });
+  }
+
+  const RejectTransaction = () => {
+    axios
+      .put("http://113.161.151.124:8082/api/transactions/deposite", {}, {
+        headers: {
+          'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
+        },
+        params: {
+            "id": id,
+            "isRejected": true,
+            "rejectReason": reasonReject
+        }
+      })
+      .then(function (response) {
+        // handle success
+        console.log("Success!");
+        setIsModalRejectTransaction(false)
+        getDataTable();
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error.request);
+      })
+      .then(function () {
+        // always executed
+      });
+  }
+
+  const onRejectTransaction = (record) => {
+    setIsModalRejectTransaction(true);
+    setId(record.id);
+  }
 
   const columns = [
     {
@@ -67,6 +124,11 @@ const AgentDeposite = () => {
       width: 200,
       dataIndex: "type",
       align: "center",
+      render: type => (
+        <Space key={type}>
+          {type == 'AGENT_DEPOSITE' ? "Nạp lên cấp" : null}
+        </Space>
+      ),
     },
     {
       title: "Số tiền",
@@ -79,12 +141,25 @@ const AgentDeposite = () => {
       width: 200,
       dataIndex: "paymentType",
       align: "center",
+      render: paymentType => (
+        <Space key={paymentType}>
+          {paymentType == 'BANK_TRANSFER' ? "Chuyển khoản ngân hàng" : null}
+        </Space>
+      ),
     },
     {
       title: "Trạng thái",
       width: 200,
       dataIndex: "status",
       align: "center",
+      render: status => (
+        <Space key={status}>
+          {status == 'DONE' ? "Xong" :
+            status == 'PENDING' ? "Đang chờ" :
+            status == 'REJECTED' ? "Đã hủy" : null
+          }
+        </Space>
+      ),
     },
     {
       title: "Lưu ý",
@@ -105,16 +180,25 @@ const AgentDeposite = () => {
       key: "x",
       render: (record) => (
         <Space size="middle">
-          <div className="row">
-            <div className="mb-1">
-              <Tag color="blue">
-                <a onClick={() => {}}>Sửa</a>
+          { record.status == "DONE"? 
+            <Tag color="green">
+              <a>Đã duyệt</a>
+            </Tag>
+            :
+            record.status == "REJECTED"? 
+            <Tag color="red">
+              <a>Đã hủy</a>
+            </Tag>
+            :
+            <>
+              <Tag color="green">
+                <a onClick={() => onAcceptTransaction(record)}>Duyệt</a>
               </Tag>
               <Tag color="red">
-                <a onClick={() => {}}>Xóa</a>
+                <a onClick={() => onRejectTransaction(record)}>Hủy</a>
               </Tag>
-            </div>
-          </div>
+            </>
+          }
         </Space>
       ),
       align: "center",
@@ -135,6 +219,23 @@ const AgentDeposite = () => {
         noDataText="Không có dữ liệu"
         locale={{emptyText: "Không có dữ liệu"}}
       />
+
+      <Modal
+        title="Hủy yêu cầu"
+        visible={isModalRejectTransaction}
+        onOk={() => RejectTransaction()}
+        onCancel={() => setIsModalRejectTransaction(false)}
+        okText="Xác nhận"
+        cancelText="Hủy"
+        zIndex={2000}
+        centered
+      >
+        <label>Lí do: </label>
+        <Input
+          value={reasonReject}
+          onChange={(e) => setReasonReject(e.target.value)}
+        />
+      </Modal>
     </div>
   );
 }

@@ -36,19 +36,19 @@ const LeftInformation = () => {
                     </div>
                     <div class="col">
                       <div class="row">
-                        <button className="firstButton" onclick="#" style={button}>
+                        <button className="firstButton" onClick="#" style={button}>
                           Duyệt
                         </button>
 
-                        <button className="secondButton" onclick="#" style={button}>
+                        <button className="secondButton" onClick="#" style={button}>
                           Từ chối
                         </button>
 
-                        <button className="thirdButton"  onclick="#" style={button}>
+                        <button className="thirdButton"  onClick="#" style={button}>
                           abcd
                         </button>
 
-                        <button className="lastButton"  onclick="#" style={button}>
+                        <button className="lastButton"  onClick="#" style={button}>
                           Xem hợp đồng
                         </button>
                       </div>
