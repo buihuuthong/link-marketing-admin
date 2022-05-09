@@ -6,7 +6,7 @@ import Highlighter from "react-highlight-words";
 import ReactDOM from "react-dom";
 import "antd/dist/antd.css";
 import UserTask from "../userTask";
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 
 const ListUser = () => {
 
@@ -300,10 +300,10 @@ const ListUser = () => {
         <Space size="middle">
           <div className="row">
             <div className="mb-1">
-              <Tag color="green" onClick={() => navigate('/user-information', { userId: userId })}>
-                <a style={{ marginRight: 10}}>
+              <Tag color="green">
+                <Link style={{ marginRight: 10}} to={`/user-information/${record.id}`}>
                 Thông tin chi tiết
-              </a>
+              </Link>
               </Tag>
             </div>
             <div className="mb-1">

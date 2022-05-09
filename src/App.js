@@ -17,7 +17,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/forgotPassword" element={<ForgotPassword />} />
             <Route path="/admin/*" element={<MasterLayoutAdmin />} />
-            <Route path="/user-information" element={<UserInformation />} />
+            <Route path="/user-information/:id" element={<UserInformation />} />
           </Routes>
         </MedalProvider>
       </BrowserRouter>
