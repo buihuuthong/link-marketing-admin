@@ -14,6 +14,8 @@ const Admin = () => {
   const [editUser, setEditUser] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState();
+  const [dataSaleOverview, setDataSaleOverview] = useState([])
+  const [isModalOverviewSale, setIsModalOverviewSale] = useState(false)
 
   //Thêm sale
   const [salePhone, setSalePhone] = useState('')
@@ -218,6 +220,30 @@ const Admin = () => {
     });
   }
 
+  const getDataSaleOverview = (record) => {
+    axios
+      .get("http://113.161.151.124:8082/api/managers/sales/overview", {
+        headers: {
+          'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
+        },
+        params: {
+          "username": record.username,
+        }
+      })
+      .then(function (response) {
+        // handle success
+        setDataSaleOverview(response.data);
+        console.log(response.data);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error.request);
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
   const editUsersTable = (record) => {
     setIsModalVisible(true);
     setEditUser({ ...record });
@@ -232,6 +258,11 @@ const Admin = () => {
   const onChangePassword = (record) => {
     setIsModalPass(true);
     setSaleName(record.username);
+  }
+
+  const onOverviewSale = (record) => {
+    setIsModalOverviewSale(true)
+    getDataSaleOverview(record)
   }
 
   const getColumnSearchProps = (dataIndex) => ({
@@ -418,25 +449,33 @@ const Admin = () => {
       key: "x",
       render: (record) => (
         <Space size="middle">
-          { record.isLocked == true ?
-            <Tag color="green">
-              <a onClick={() => onUnLockedUser(record)}>Mở khóa</a>
-            </Tag>
-          :
-          
-          <Tag color="red">
-            <a onClick={() => onLockedUser(record)}>Khóa</a>
-          </Tag>
-          }
-          <Tag color="blue">
-            <a onClick={() => editUsersTable(record)}>Sửa</a>
-          </Tag>
-          <Tag color="red">
-            <a onClick={() => onDeleteUser(record)}>Xóa</a>
-          </Tag>
-          <Tag color="geekblue">
-            <a onClick={() => onChangePassword(record)}>Đổi mật khẩu</a>
-          </Tag>
+          <div className="row">
+            <div className="mb-1">
+              { record.isLocked == true ?
+                <Tag color="green">
+                  <a onClick={() => onUnLockedUser(record)}>Mở khóa</a>
+                </Tag>
+              :
+              <Tag color="red">
+                <a onClick={() => onLockedUser(record)}>Khóa</a>
+              </Tag>
+              }
+              <Tag color="blue">
+                <a onClick={() => editUsersTable(record)}>Sửa</a>
+              </Tag>
+              <Tag color="red">
+                <a onClick={() => onDeleteUser(record)}>Xóa</a>
+              </Tag>
+            </div>
+            <div>
+              <Tag color="geekblue">
+                <a onClick={() => onChangePassword(record)}>Đổi mật khẩu</a>
+              </Tag>
+              <Tag color="geekblue">
+                <a onClick={() => onOverviewSale(record)}>Thống kê sale</a>
+              </Tag>
+            </div>
+          </div>
         </Space>
       ),
       align: "center",
@@ -583,6 +622,37 @@ const Admin = () => {
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
         />
+      </Modal>
+
+      {/* Thống kê sale */}
+      <Modal
+        title="Thống kê nhiệm vụ"
+        visible={isModalOverviewSale}
+        onOk={() => setIsModalOverviewSale(false)}
+        onCancel={() => setIsModalOverviewSale(false)}
+        okText="Đóng"
+        cancelText="Hủy"
+        zIndex={2000}
+        centered
+      >
+        <div>
+          <div>
+            <label style={{ fontWeight:"bold"}}>Số người dùng hôm nay: </label>
+            <span> {dataSaleOverview.todayUserCount}</span>
+          </div>
+          <div>
+            <label style={{ fontWeight:"bold"}}>Số tiền gửi của người dùng hôm nay: </label> 
+            <span> {dataSaleOverview.todayUserDeposite}</span>
+          </div>
+          <div>
+            <label style={{ fontWeight:"bold"}}>Tổng số người dùng quản lí: </label>
+            <span> {dataSaleOverview.totalUserCount}</span>
+          </div>
+          <div>
+            <label style={{ fontWeight:"bold"}}>Tổng số tiền gửi của người dùng: </label>
+            <span> {dataSaleOverview.totalUserDeposite}</span>
+          </div>
+        </div>
       </Modal>
     </div>
   );

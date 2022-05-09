@@ -9,35 +9,40 @@ import {
   Switch,
   Route,
   Link,
-  useParams
+  useParams,
 } from "react-router-dom";
 import axios from "axios";
+import { List, message, Avatar, Skeleton, Divider } from "antd";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 // import './user.scss';
 
 const UserInformation = () => {
-
   const { id } = useParams();
-  const [readMore, setReadMore] = useState(false)
-  const [userData, setUserData] = useState([])
-  const [userInfo, setUserInfo] = useState([])
+  const [readMore, setReadMore] = useState(false);
+  const [userData, setUserData] = useState([]);
+  const [userInfo, setUserInfo] = useState([]);
+  const [userTransaction, setUserTransaction] = useState([]);
+  const [userTask, setUserTask] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    getUserById()
-    getUserInfo()
-    console.log("Id: ",id);
-  }, [id])
-  
+    getUserById();
+    getUserInfo();
+    getUserTransaction();
+    getUserTask()
+    console.log("Id: ", id);
+  }, [id]);
 
   const getUserById = () => {
     axios
       .get("http://113.161.151.124:8082/api/managers/users/one", {
         headers: {
-          'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
+          Authorization: `Bearer ${window.sessionStorage.getItem("token")}`,
         },
         params: {
-          "id": id
-        }
+          id: id,
+        },
       })
       .then(function (response) {
         // handle success
@@ -50,17 +55,17 @@ const UserInformation = () => {
       .then(function () {
         // always executed
       });
-  }
+  };
 
   const getUserInfo = () => {
     axios
       .get("http://113.161.151.124:8082/api/user-infos", {
         headers: {
-          'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
+          Authorization: `Bearer ${window.sessionStorage.getItem("token")}`,
         },
         params: {
-          "id": id
-        }
+          id: id,
+        },
       })
       .then(function (response) {
         // handle success
@@ -73,7 +78,66 @@ const UserInformation = () => {
       .then(function () {
         // always executed
       });
-  }
+  };
+
+  const getUserTransaction = () => {
+    if (loading) {
+      return;
+    }
+    axios
+      .get("http://113.161.151.124:8082/api/transactions", {
+        headers: {
+          Authorization: `Bearer ${window.sessionStorage.getItem("token")}`,
+        },
+        params: {
+          userId: id,
+          status: "DONE",
+          type: "WITHDRAW"
+        },
+      })
+      .then(function (response) {
+        // handle success
+        setUserTransaction(response.data);
+        setLoading(false);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error.request);
+        setLoading(false);
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
+  const getUserTask = () => {
+    if (loading) {
+      return;
+    }
+    axios
+      .get("http://113.161.151.124:8082/api/tasks", {
+        headers: {
+          Authorization: `Bearer ${window.sessionStorage.getItem("token")}`,
+        },
+        params: {
+          userId: id,
+          status: "DONE",
+        },
+      })
+      .then(function (response) {
+        // handle success
+        setUserTask(response.data);
+        setLoading(false);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error.request);
+        setLoading(false);  
+      })
+      .then(function () {
+        // always executed
+      });
+  };
 
   return (
     <Box sx={{ flexGrow: 1 }} className="boxContainer">
@@ -83,71 +147,142 @@ const UserInformation = () => {
           <div id="layoutAuthentication">
             <div id="layoutAuthentication_content">
               <main>
-                  <div className="container">
-                    <div className="firs-box row" style={leftBox}>
-                      <div className="col">
-                        { userData.idCardFront != null ? 
-                        <img src={"http://113.161.151.124:8082/secure-images/"+ userData.idCardFront + "?token=" + window.sessionStorage.getItem('token')} style={imageData}/>
-                        :
-                        <img src={require('../../../../../assets/auth/assets/img/1.png')} style={imageBox}/>
-                        }
-                      </div>
-                      <div className="col">
-                        { userData.idCardFront != null ? 
-                        <img src={"http://113.161.151.124:8082/secure-images/"+ userData.idCardBack + "?token=" + window.sessionStorage.getItem('token')} style={imageData}/>
-                        :
-                        <img src={require('../../../../../assets/auth/assets/img/1.png')} style={imageBox}/>
-                        }
-                      </div>
-                      <div className="col">
-                        { userData.idCardFront != null ? 
-                        <img src={"http://113.161.151.124:8082/secure-images/"+ userData.cardImage + "?token=" + window.sessionStorage.getItem('token')} style={imageData}/>
-                        :
-                        <img src={require('../../../../../assets/auth/assets/img/1.png')} style={imageBox}/>
-                        }
-                      </div>
-                    </div>
-                    {/*------------------------------------------------- */}
-                    <div className="thirdBox row p-2" style={leftBox}>
-                      <div className="col">
-                        <h5>Rút tiền</h5>
-                      </div>
-                      <div>
-                        <p>Không có thông tin rút tiền</p>
-                      </div>
-                      <div>
-
-                      </div>
-                    </div>
-
-                    {/*------------------------------------------------- */}
-                    <div className="lastBox row p-2" style={leftBox}>
-                      <div className="col">
-                        <h5>Báo lỗi</h5>
-                      </div>
-                      <div>
-                        <input type="text" 
-                          style={{
-                            width: 300,
-                            borderColor: '#FF9999'
-                          }}
+                <div className="container">
+                  <div className="firsBoxLeft row" style={leftBox}>
+                    <div className="col">
+                      {userData.idCardFront != null ? (
+                        <img
+                          src={
+                            "http://113.161.151.124:8082/secure-images/" +
+                            userData.idCardFront +
+                            "?token=" +
+                            window.sessionStorage.getItem("token")
+                          }
+                          style={imageData}
                         />
-                        <input type="submit" value="Xác nhận" 
-                          style={{ 
-                            marginLeft: 10,
-                            backgroundColor: '#FF9999',
-                            color: '#FF0000',
-                            borderColor: '#FF9999'
-                          }}
+                      ) : (
+                        <img
+                          src={require("../../../../../assets/auth/assets/img/1.png")}
+                          style={imageBox}
                         />
-                      </div>
-                    <div>
+                      )}
+                    </div>
+                    <div className="col">
+                      {userData.idCardFront != null ? (
+                        <img
+                          src={
+                            "http://113.161.151.124:8082/secure-images/" +
+                            userData.idCardBack +
+                            "?token=" +
+                            window.sessionStorage.getItem("token")
+                          }
+                          style={imageData}
+                        />
+                      ) : (
+                        <img
+                          src={require("../../../../../assets/auth/assets/img/1.png")}
+                          style={imageBox}
+                        />
+                      )}
+                    </div>
+                    <div className="col">
+                      {userData.idCardFront != null ? (
+                        <img
+                          src={
+                            "http://113.161.151.124:8082/secure-images/" +
+                            userData.cardImage +
+                            "?token=" +
+                            window.sessionStorage.getItem("token")
+                          }
+                          style={imageData}
+                        />
+                      ) : (
+                        <img
+                          src={require("../../../../../assets/auth/assets/img/1.png")}
+                          style={imageBox}
+                        />
+                      )}
                     </div>
                   </div>
+                  {/*------------------------------------------------- */}
+                  <div className="secondBoxLeft row p-2" style={leftBox}>
+                    <div className="col">
+                      <h5>Lịch sử rút tiền</h5>
+                    </div>
+                    <div
+                      id="scrollableDiv"
+                      style={{
+                        height: '100%',
+                        overflow: "auto",
+                        padding: "0 16px",
+                        border: "1px solid rgba(140, 140, 140, 0.35)",
+                      }}
+                    >
+                      <InfiniteScroll
+                        dataLength={userTransaction.length}
+                        next={getUserTransaction}
+                        hasMore={userTransaction.length < 50}
+                        loader={
+                          <Skeleton avatar paragraph={{ rows: 1 }} loading={loading} />
+                        }
+                        endMessage={
+                          <Divider plain>It is all, nothing more 🤐</Divider>
+                        }
+                        scrollableTarget="scrollableDiv"
+                      >
+                        <List
+                          dataSource={userTransaction}
+                          noDataText="Không có dữ liệu"
+                          locale={{emptyText: "Không có dữ liệu"}}
+                          renderItem={(item) => (
+                            <List.Item key={item.id} className="row">
+                              <List.Item.Meta
+                                title={
+                                  <p>
+                                    {item.paymentType == "BANK_TRANSFER" ? "Chuyển khoản ngân hàng" : "Giao dịch trực tiếp"}
+                                  </p>
+                                }
+                              />
+                              <div>
+                                <label>Số tiền: </label><span style={{ color: "grey"}}> {item.amount}</span>
+                              </div>
+                            </List.Item>
+                          )}
+                        />
+                      </InfiniteScroll>
+                    </div>
+                  </div>
+
+                  {/*------------------------------------------------- */}
+                  <div className="thirdBoxLeft row p-2" style={leftBox}>
+                    <div className="col">
+                      <h5>Báo lỗi</h5>
+                    </div>
+                    <div>
+                      <input
+                        type="text"
+                        style={{
+                          width: 300,
+                          borderColor: "#FF9999",
+                        }}
+                      />
+                      <input
+                        type="submit"
+                        value="Xác nhận"
+                        style={{
+                          marginLeft: 10,
+                          backgroundColor: "#FF9999",
+                          color: "#FF0000",
+                          borderColor: "#FF9999",
+                        }}
+                      />
+                    </div>
+                    <div></div>
+                  </div>
                 </div>
-            </main>
+              </main>
+            </div>
           </div>
-        </div>
         </Grid>
         <Grid item xs={4}>
           {/* <RightInformation /> */}
@@ -156,66 +291,131 @@ const UserInformation = () => {
               <main>
                 <div className="container">
                   {/*------------------------------------------------- */}
-                  <div className="firstBox row p-2" style={box}>
+                  <div className="firstBoxRight row p-2" style={box}>
                     <div className="col">
                       <h5 style={{ textAlign: "center" }}>Thông tin cá nhân</h5>
-                    </div> 
-                    {readMore ? 
-                    <div>
-                      <label style={label}>Họ và tên:</label><span> {userData.fullName}</span>
-                      <br/>
-                      <label style={label}>Giới tính:</label><span> {userData.gender == "FEMALE" ? "Nữ" : "Nam"}</span>
-                      <br/>
-                      <label style={label}>Số điện thoại:</label><span> {userData.phone}</span>
-                      <br/>
-                      <label style={label}>Địa chỉ: </label><span> {userData.address}</span>
-                      <br/>
-                      <label style={label}>Công việc:</label><span> {userData.job}</span>
-                      <br/>
-                      <label style={label}>Số tài khoản:</label><span> {userData.bankNumber}</span>
-                      <br/>
-                      <label style={label}>Tên ngân hàng:</label><span> {userData.bankName}</span>
                     </div>
-                    :
-                    <div>
-                      <label style={label}>Họ và tên: </label><span> {userData.fullName}</span>
-                      <br/>
-                      <label style={label}>Số điện thoại: </label><span> {userData.phone}</span>
-                    </div>
-                    }
+                    {readMore ? (
+                      <div>
+                        <label style={label}>Họ và tên:</label>
+                        <span> {userData.fullName}</span>
+                        <br />
+                        <label style={label}>Giới tính:</label>
+                        <span>
+                          {" "}
+                          {userData.gender == "FEMALE" ? "Nữ" : "Nam"}
+                        </span>
+                        <br />
+                        <label style={label}>Số điện thoại:</label>
+                        <span> {userData.phone}</span>
+                        <br />
+                        <label style={label}>Địa chỉ: </label>
+                        <span> {userData.address}</span>
+                        <br />
+                        <label style={label}>Công việc:</label>
+                        <span> {userData.job}</span>
+                        <br />
+                        <label style={label}>Số tài khoản:</label>
+                        <span> {userData.bankNumber}</span>
+                        <br />
+                        <label style={label}>Tên ngân hàng:</label>
+                        <span> {userData.bankName}</span>
+                      </div>
+                    ) : (
+                      <div>
+                        <label style={label}>Họ và tên: </label>
+                        <span> {userData.fullName}</span>
+                        <br />
+                        <label style={label}>Số điện thoại: </label>
+                        <span> {userData.phone}</span>
+                      </div>
+                    )}
                     <div style={{ textAlign: "center" }}>
-                    {readMore ?
-                        <button style={buttonReadMore} onClick={() => setReadMore(false)}>
-                            <h6 style={{ color: "#0080FF" }}>Ẩn bớt</h6>
+                      {readMore ? (
+                        <button
+                          style={buttonReadMore}
+                          onClick={() => setReadMore(false)}
+                        >
+                          <h6 style={{ color: "#0080FF" }}>Ẩn bớt</h6>
                         </button>
-                        :
-                        <button style={buttonReadMore} onClick={() => setReadMore(true)}>
-                            <h6 style={{ color: "#0080FF" }}>Xem thêm</h6>
+                      ) : (
+                        <button
+                          style={buttonReadMore}
+                          onClick={() => setReadMore(true)}
+                        >
+                          <h6 style={{ color: "#0080FF" }}>Xem thêm</h6>
                         </button>
-                    }
+                      )}
                     </div>
                   </div>
 
-                    {/*------------------------------------------------- */}
-                    <div className="secondBox row p-2" style={box}>
-                      <div>
-                        <label style={label}>Số dư: </label><span> {userInfo.money}</span>
-                      </div>
-                      <div>
-                        <h6  style={{ textAlign: "center" }}>Điểm tín dụng:</h6>
-                        <label style={label}>Trong tháng: </label><span> {userInfo.monthlyCreditPoint}</span>
-                        <br/>
-                        <label style={label}>Hiện có: </label><span> {userInfo.creditPoint}</span>
-                        <br/>
-                        <label style={label}>Tổng điểm: </label><span> {userInfo.totalPoint}</span>
-                      </div>
+                  {/*------------------------------------------------- */}
+                  <div className="secondBoxRight row p-2" style={box}>
+                    <div>
+                      <label style={label}>Số dư: </label>
+                      <span> {userInfo.money}</span>
                     </div>
-                    {/*------------------------------------------------- */}
-                    <div className="firstBox row p-2" style={box}>
-                        <div className="col">
-                        <h5 style={{ textAlign: "center" }}>Lịch sử nhiệm vụ</h5>
-                        </div>
+                    <div>
+                      <h6 style={{ textAlign: "center" }}>Điểm tín dụng:</h6>
+                      <label style={label}>Trong tháng: </label>
+                      <span> {userInfo.monthlyCreditPoint}</span>
+                      <br />
+                      <label style={label}>Hiện có: </label>
+                      <span> {userInfo.creditPoint}</span>
+                      <br />
+                      <label style={label}>Tổng điểm: </label>
+                      <span> {userInfo.totalPoint}</span>
                     </div>
+                  </div>
+                  {/*------------------------------------------------- */}
+                  <div className="thirdBoxRight row p-2" style={box}>
+                    <div className="col">
+                      <h5 style={{ textAlign: "center" }}>Lịch sử nhiệm vụ</h5>
+                    </div>
+                    <div
+                      id="scrollableDiv"
+                      style={{
+                        height: '100%',
+                        overflow: "auto",
+                        padding: "0 16px",
+                        border: "1px solid rgba(140, 140, 140, 0.35)",
+                      }}
+                    >
+                      <InfiniteScroll
+                        dataLength={userTask.length}
+                        next={getUserTask}
+                        hasMore={userTask.length < 50}
+                        loader={
+                          <Skeleton avatar paragraph={{ rows: 1 }} loading={loading} />
+                        }
+                        endMessage={
+                          <Divider plain>It is all, nothing more 🤐</Divider>
+                        }
+                        scrollableTarget="scrollableDiv"
+                      >
+                        <List
+                          dataSource={userTask}
+                          noDataText="Không có dữ liệu"
+                          locale={{emptyText: "Không có dữ liệu"}}
+                          renderItem={(item) => (
+                            <List.Item key={item.id} className="row">
+                              <List.Item.Meta
+                                title={
+                                  <p>
+                                    {item.productName}
+                                  </p>
+                                }
+                                description={item.description}
+                              />
+                              <div>
+                                <label>Điểm nhận: </label><span style={{ color: "grey"}}> {item.receivedPoint}</span>
+                              </div>
+                            </List.Item>
+                          )}
+                        />
+                      </InfiniteScroll>
+                    </div>
+                  </div>
                 </div>
               </main>
             </div>
@@ -232,50 +432,50 @@ const box = {
   margin: 5,
   backgroundColor: "white",
   borderRadius: 10,
-}
-
-const buttonReadMore = {
-border: "none",
-textAlign: "center",
-backgroundColor: "#fff",
 };
 
-const buttonRight ={
+const buttonReadMore = {
+  border: "none",
+  textAlign: "center",
+  backgroundColor: "#fff",
+};
+
+const buttonRight = {
   borderRadius: 10,
-  width: '30%',
-}
+  width: "30%",
+};
 
 const label = {
-  fontWeight: 'bold',
-}
+  fontWeight: "bold",
+};
 
 //Left
 const imageBox = {
   width: 100,
   height: 100,
-  justifyContent: 'center',
-}
+  justifyContent: "center",
+};
 
 const imageData = {
   width: 300,
   height: 200,
-}
+};
 
 const buttonLeft = {
   marginTop: 5,
   marginBottom: 5,
   borderRadius: 20,
-  color: 'white',
+  color: "white",
   padding: 5,
-  border: 'none',
-}
+  border: "none",
+};
 
 const leftBox = {
-  backgroundColor: 'white',
+  backgroundColor: "white",
   margin: 5,
   borderRadius: 10,
-}
+};
 
 const buttonError = {
-  marginLeft: 20
-}
+  marginLeft: 20,
+};
