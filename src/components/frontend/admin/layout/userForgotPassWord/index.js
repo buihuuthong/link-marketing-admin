@@ -26,7 +26,7 @@ const UserForgotPassWord = () => {
 
   const getDataTable = async(pg = page, pgSize = pageSize) => {
     axios
-      .get("http://113.161.151.124:8082/api/password-reset/users", {
+      .get("https://api.tmdtbamboo.com/api/password-reset/users", {
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
         },
@@ -86,7 +86,7 @@ const UserForgotPassWord = () => {
     }
     
     axios
-      .put("http://113.161.151.124:8082/api/password-reset/users/reset-password", data, {
+      .put("https://api.tmdtbamboo.com/api/password-reset/users/reset-password", data, {
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
         }
@@ -95,7 +95,7 @@ const UserForgotPassWord = () => {
         // handle success
         console.log("Success");
         axios
-          .put("http://113.161.151.124:8082/api/password-reset/users/mark-changed", {}, {
+          .put("https://api.tmdtbamboo.com/api/password-reset/users/mark-changed", {}, {
             headers: {
               'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
             },

@@ -24,7 +24,7 @@ function Login() {
   const handleLogin = () => {
 
     axios
-      .post("http://113.161.151.124:8082/api/managers/login", data)
+      .post("https://api.tmdtbamboo.com/api/managers/login", data)
       .then(function (response) {
         // handle success
         console.log("Success");

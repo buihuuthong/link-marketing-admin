@@ -36,7 +36,7 @@ const UserInformation = () => {
 
   const getUserById = () => {
     axios
-      .get("http://113.161.151.124:8082/api/managers/users/one", {
+      .get("https://api.tmdtbamboo.com/api/managers/users/one", {
         headers: {
           Authorization: `Bearer ${window.sessionStorage.getItem("token")}`,
         },
@@ -59,7 +59,7 @@ const UserInformation = () => {
 
   const getUserInfo = () => {
     axios
-      .get("http://113.161.151.124:8082/api/user-infos", {
+      .get("https://api.tmdtbamboo.com/api/user-infos", {
         headers: {
           Authorization: `Bearer ${window.sessionStorage.getItem("token")}`,
         },
@@ -85,7 +85,7 @@ const UserInformation = () => {
       return;
     }
     axios
-      .get("http://113.161.151.124:8082/api/transactions", {
+      .get("https://api.tmdtbamboo.com/api/transactions", {
         headers: {
           Authorization: `Bearer ${window.sessionStorage.getItem("token")}`,
         },
@@ -115,7 +115,7 @@ const UserInformation = () => {
       return;
     }
     axios
-      .get("http://113.161.151.124:8082/api/tasks", {
+      .get("https://api.tmdtbamboo.com/api/tasks", {
         headers: {
           Authorization: `Bearer ${window.sessionStorage.getItem("token")}`,
         },
@@ -153,7 +153,7 @@ const UserInformation = () => {
                       {userData.idCardFront != null ? (
                         <img
                           src={
-                            "http://113.161.151.124:8082/secure-images/" +
+                            "https://api.tmdtbamboo.com/secure-images/" +
                             userData.idCardFront +
                             "?token=" +
                             window.sessionStorage.getItem("token")
@@ -171,7 +171,7 @@ const UserInformation = () => {
                       {userData.idCardFront != null ? (
                         <img
                           src={
-                            "http://113.161.151.124:8082/secure-images/" +
+                            "https://api.tmdtbamboo.com/secure-images/" +
                             userData.idCardBack +
                             "?token=" +
                             window.sessionStorage.getItem("token")
@@ -189,7 +189,7 @@ const UserInformation = () => {
                       {userData.idCardFront != null ? (
                         <img
                           src={
-                            "http://113.161.151.124:8082/secure-images/" +
+                            "https://api.tmdtbamboo.com/secure-images/" +
                             userData.cardImage +
                             "?token=" +
                             window.sessionStorage.getItem("token")

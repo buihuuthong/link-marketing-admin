@@ -22,7 +22,7 @@ const WithDraw = () => {
 
   const getDataTable = async(pg = page, pgSize = pageSize) => {
     axios
-      .get("http://113.161.151.124:8082/api/transactions", {
+      .get("https://api.tmdtbamboo.com/api/transactions", {
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
         },
@@ -78,7 +78,7 @@ const WithDraw = () => {
   const onAcceptTransaction = (record) => {
     console.log(record.id);
     axios
-      .put("http://113.161.151.124:8082/api/transactions/withdraw", {}, {
+      .put("https://api.tmdtbamboo.com/api/transactions/withdraw", {}, {
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
         },
@@ -103,7 +103,7 @@ const WithDraw = () => {
 
   const RejectTransaction = () => {
     axios
-      .put("http://113.161.151.124:8082/api/transactions/withdraw", {}, {
+      .put("https://api.tmdtbamboo.com/api/transactions/withdraw", {}, {
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
         },

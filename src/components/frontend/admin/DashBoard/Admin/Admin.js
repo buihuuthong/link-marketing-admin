@@ -35,7 +35,7 @@ const Admin = () => {
 
   const getDataTable = async(pg = page, pgSize = pageSize) => {
     axios
-      .get("http://113.161.151.124:8082/api/managers/sales", {
+      .get("https://api.tmdtbamboo.com/api/managers/sales", {
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
         },
@@ -95,7 +95,7 @@ const Admin = () => {
     }
     
     axios
-      .patch("http://113.161.151.124:8082/api/managers/sales", data, {
+      .patch("https://api.tmdtbamboo.com/api/managers/sales", data, {
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
         },
@@ -124,7 +124,7 @@ const Admin = () => {
     }
     
     axios
-      .patch("http://113.161.151.124:8082/api/managers/sales", data, {
+      .patch("https://api.tmdtbamboo.com/api/managers/sales", data, {
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
         },
@@ -147,7 +147,7 @@ const Admin = () => {
 
   const DeleteUser = (record) => {
     axios
-      .delete("http://113.161.151.124:8082/api/managers/sales", {
+      .delete("https://api.tmdtbamboo.com/api/managers/sales", {
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
         },
@@ -185,7 +185,7 @@ const Admin = () => {
 
   const LockedUser = (record) =>{
     axios
-      .put("http://113.161.151.124:8082/api/managers/sales/lock",{} ,{
+      .put("https://api.tmdtbamboo.com/api/managers/sales/lock",{} ,{
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
         },
@@ -210,7 +210,7 @@ const Admin = () => {
 
   const UnLockedUser = (record) =>{
     axios
-      .put("http://113.161.151.124:8082/api/managers/sales/lock",{} ,{
+      .put("https://api.tmdtbamboo.com/api/managers/sales/lock",{} ,{
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
         },
@@ -258,7 +258,7 @@ const Admin = () => {
 
   const getDataSaleOverview = (record) => {
     axios
-      .get("http://113.161.151.124:8082/api/managers/sales/overview", {
+      .get("https://api.tmdtbamboo.com/api/managers/sales/overview", {
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
         },
@@ -398,7 +398,7 @@ const Admin = () => {
     }
     
     axios
-      .post("http://113.161.151.124:8082/api/managers/sales", data, {
+      .post("https://api.tmdtbamboo.com/api/managers/sales", data, {
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
         },

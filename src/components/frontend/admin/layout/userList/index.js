@@ -31,7 +31,7 @@ const ListUser = () => {
 
   const getDataTable = async(pg = page, pgSize = pageSize) => {
     axios
-      .get("http://113.161.151.124:8082/api/managers/users", {
+      .get("https://api.tmdtbamboo.com/api/managers/users", {
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
         },
@@ -85,7 +85,7 @@ const ListUser = () => {
 
   const getDataTaskOverview = (record) => {
     axios
-      .get("http://113.161.151.124:8082/api/tasks/overview", {
+      .get("https://api.tmdtbamboo.com/api/tasks/overview", {
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
         },
@@ -119,7 +119,7 @@ const ListUser = () => {
     }
     
     axios
-      .patch("http://113.161.151.124:8082/api/managers/users", data, {
+      .patch("https://api.tmdtbamboo.com/api/managers/users", data, {
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
         },
@@ -143,7 +143,7 @@ const ListUser = () => {
   const DeleteUser = (record) => {
     
     axios
-      .delete("http://113.161.151.124:8082/api/managers/users", {
+      .delete("https://api.tmdtbamboo.com/api/managers/users", {
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
         },

@@ -37,7 +37,7 @@ const UserTask = (userId) => {
 
   const getDataTable = async(pg = page, pgSize = pageSize) => {
     axios
-      .get("http://113.161.151.124:8082/api/tasks", {
+      .get("https://api.tmdtbamboo.com/api/tasks", {
         headers: {
           Authorization: `Bearer ${window.sessionStorage.getItem("token")}`,
         },
@@ -102,7 +102,7 @@ const UserTask = (userId) => {
     };
 
     axios
-      .patch("http://113.161.151.124:8082/api/tasks", data, {
+      .patch("https://api.tmdtbamboo.com/api/tasks", data, {
         headers: {
           Authorization: `Bearer ${window.sessionStorage.getItem("token")}`,
         },
@@ -125,7 +125,7 @@ const UserTask = (userId) => {
 
   const DeleteTask = (record) => {
     axios
-      .delete("http://113.161.151.124:8082/api/tasks", {
+      .delete("https://api.tmdtbamboo.com/api/tasks", {
         headers: {
           Authorization: `Bearer ${window.sessionStorage.getItem("token")}`,
         },
@@ -184,7 +184,7 @@ const UserTask = (userId) => {
     };
 
     axios
-      .post("http://113.161.151.124:8082/api/tasks", data, {
+      .post("https://api.tmdtbamboo.com/api/tasks", data, {
         headers: {
           Authorization: `Bearer ${window.sessionStorage.getItem("token")}`,
         },
@@ -219,7 +219,7 @@ const UserTask = (userId) => {
   const ChangeTaskStatus = () => {
     axios
       .put(
-        "http://113.161.151.124:8082/api/tasks/change-status",
+        "https://api.tmdtbamboo.com/api/tasks/change-status",
         {},
         {
           headers: {
@@ -262,7 +262,7 @@ const UserTask = (userId) => {
 
     axios
       .put(
-        "http://113.161.151.124:8082/api/tasks/product-image",
+        "https://api.tmdtbamboo.com/api/tasks/product-image",
         formData,
         {
           headers: {
@@ -322,7 +322,7 @@ const UserTask = (userId) => {
       render: productImage => (
         <Space key={productImage}>
           { productImage == null ?
-          null : <img style={{ width: 200, height: 200 }} src={"http://113.161.151.124:8081/images/"+ productImage}/>
+          null : <img style={{ width: 200, height: 200 }} src={"https://api.tmdtbamboo.com/images/"+ productImage}/>
           }
         </Space>
       ),

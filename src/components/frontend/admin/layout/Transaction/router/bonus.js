@@ -24,7 +24,7 @@ const Bonus = () => {
 
   const getDataTable = async(pg = page, pgSize = pageSize) => {
     axios
-      .get("http://113.161.151.124:8082/api/transactions", {
+      .get("https://api.tmdtbamboo.com/api/transactions", {
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
         },
@@ -80,7 +80,7 @@ const Bonus = () => {
 
   const Bonus = () => {
     axios
-      .post("http://113.161.151.124:8082/api/transactions/bonus", {}, {
+      .post("https://api.tmdtbamboo.com/api/transactions/bonus", {}, {
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
         },
@@ -105,7 +105,7 @@ const Bonus = () => {
 
   const Deduction = () => {
     axios
-      .post("http://113.161.151.124:8082/api/transactions/bonus", {}, {
+      .post("https://api.tmdtbamboo.com/api/transactions/bonus", {}, {
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
         },
