@@ -3,6 +3,7 @@ import { Table, Space, Modal, Input, Button, Tag } from "antd";
 import axios from "axios";
 import "antd/dist/antd.css";
 import { useNavigate } from 'react-router-dom'
+import { LeftOutlined, RightOutlined  } from '@ant-design/icons';
 
 const AgentDeposite = () => {
 
@@ -11,12 +12,15 @@ const AgentDeposite = () => {
   const [isModalRejectTransaction, setIsModalRejectTransaction] = useState(false)
   const [reasonReject, setReasonReject] = useState('')
   const [id, setId] = useState('')
+  const [page, setPage] = useState(0)
+  const [pageSize] = useState(10)
+  const [totalCount, setTotalCount] = useState(0)
 
   useEffect(() => {
     getDataTable();
   }, []);
 
-  const getDataTable = () => {
+  const getDataTable = async(pg = page, pgSize = pageSize) => {
     axios
       .get("http://113.161.151.124:8082/api/transactions", {
         headers: {
@@ -24,12 +28,15 @@ const AgentDeposite = () => {
         },
         params: {
             "type": "AGENT_DEPOSITE",
+            page: pg,
+            size: pgSize
 
         }
       })
       .then(function (response) {
         // handle success
         setDataTable(response.data);
+        setTotalCount(response.data.length);
       })
       .catch(function (error) {
         // handle error
@@ -40,6 +47,35 @@ const AgentDeposite = () => {
       });
   };
   
+  const prevPage = async() => {
+    const pg = page === 0 ? 0 : page - 1
+    getDataTable(pg)
+    setPage(pg);
+  }
+  
+  const nextPage = async() => {
+    const pg = page < Math.ceil(totalCount / pageSize) ? page + 1 : page
+    getDataTable(pg)
+    setPage(pg);
+  }
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      getDataTable(event.target.value)
+      setPage(event.target.value)
+    }
+  }
+  
+  const Pagination = () => {
+    return(
+      <>
+        <Button icon={<LeftOutlined onClick={prevPage}/>} />
+        <Input style={{ width: '5%', textAlign: "center"}} defaultValue={page} onKeyDown={handleKeyDown}/>
+        <Button icon={<RightOutlined />} onClick={nextPage} />
+      </>
+    )
+  }
+
   const onAcceptTransaction = (record) => {
     console.log(record.id);
     axios
@@ -218,6 +254,8 @@ const AgentDeposite = () => {
         // loading={dataTable == "" ? true : false}
         noDataText="Không có dữ liệu"
         locale={{emptyText: "Không có dữ liệu"}}
+        pagination={false}
+        footer={() => <Pagination/>}
       />
 
       <Modal

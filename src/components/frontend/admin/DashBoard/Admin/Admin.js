@@ -5,6 +5,7 @@ import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import ReactDOM from "react-dom";
 import "antd/dist/antd.css";
+  import { LeftOutlined, RightOutlined  } from '@ant-design/icons';
 
 const Admin = () => {
   const [dataTable, setDataTable] = useState([]);
@@ -24,22 +25,29 @@ const Admin = () => {
   const [salePassWord, setSalePassWord] = useState('')
   const [saleName, setSaleName] = useState('')
   const [newPassword, setNewPassword] = useState('')
+  const [page, setPage] = useState(0)
+  const [pageSize] = useState(10)
+  const [totalCount, setTotalCount] = useState(0)
 
   useEffect(() => {
     getDataTable();
   }, []);
 
-  const getDataTable = () => {
+  const getDataTable = async(pg = page, pgSize = pageSize) => {
     axios
       .get("http://113.161.151.124:8082/api/managers/sales", {
         headers: {
           'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
+        },
+        params: {
+          page: pg,
+          size: pgSize
         }
       })
       .then(function (response) {
         // handle success
         setDataTable(response.data);
-        console.log(response.data);
+        setTotalCount(response.data.length);
       })
       .catch(function (error) {
         // handle error
@@ -50,6 +58,34 @@ const Admin = () => {
       });
   };
 
+  const prevPage = async() => {
+    const pg = page === 0 ? 0 : page - 1
+    getDataTable(pg)
+    setPage(pg);
+  }
+  
+  const nextPage = async() => {
+    const pg = page < Math.ceil(totalCount / pageSize) ? page + 1 : page
+    getDataTable(pg)
+    setPage(pg);
+  }
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      getDataTable(event.target.value)
+      setPage(event.target.value)
+    }
+  }
+
+  const Pagination = () => {
+    return(
+      <>
+        <Button icon={<LeftOutlined onClick={prevPage}/>} />
+        <Input style={{ width: '5%', textAlign: "center"}} defaultValue={page} onKeyDown={handleKeyDown}/>
+        <Button icon={<RightOutlined />} onClick={nextPage} />
+      </>
+    )
+  }
 
   const UpdateUser = () => {
     const data = {
@@ -503,6 +539,8 @@ const Admin = () => {
         // loading={dataTable == "" ? true : false}
         noDataText="Không có dữ liệu"
         locale={{emptyText: "Không có dữ liệu"}}
+        pagination={false}
+        footer={() => <Pagination/>}
       />
 
       {/* Modal */}
