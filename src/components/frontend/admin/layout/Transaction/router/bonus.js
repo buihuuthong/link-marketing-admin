@@ -4,9 +4,10 @@ import axios from "axios";
 import "antd/dist/antd.css";
 import { useNavigate } from 'react-router-dom'
 import { LeftOutlined, RightOutlined  } from '@ant-design/icons';
+import {Helmet} from "react-helmet";
 
 const Bonus = () => {
-
+  const { Search } = Input;
   const navigate = useNavigate();
   const [dataTable, setDataTable] = useState([]);
   const [isModalBonusMoney, setIsModalBonusMoney] = useState(false)
@@ -17,10 +18,11 @@ const Bonus = () => {
   const [page, setPage] = useState(0)
   const [pageSize] = useState(10)
   const [totalCount, setTotalCount] = useState(0)
+  const [search, setSearch] = useState()
 
   useEffect(() => {
     getDataTable();
-  }, []);
+  }, [search]);
 
   const getDataTable = async(pg = page, pgSize = pageSize) => {
     axios
@@ -31,8 +33,8 @@ const Bonus = () => {
         params: {
             "type": "BONUS",
             page: pg,
-            size: pgSize
-
+            size: pgSize,
+            search: search
         }
       })
       .then(function (response) {
@@ -76,6 +78,11 @@ const Bonus = () => {
         <Button icon={<RightOutlined />} onClick={nextPage} />
       </>
     )
+  }
+
+  const onSearch = async(value) => {
+    getDataTable()
+    setSearch(value)
   }
 
   const Bonus = () => {
@@ -226,6 +233,18 @@ const Bonus = () => {
         margin: 20,
       }}
     >
+      <Helmet>
+          <meta charSet="utf-8" />
+          <title>Quản lí thưởng</title>
+      </Helmet>
+
+      <div className="row">
+        <div className="col"/>
+        <div className="col" style={{textAlign: "right"}}>
+          <Search placeholder="Tìm kiếm theo tên hoặc số điện thoại" onSearch={onSearch} style={{ width: "50%"}}/>
+        </div>
+      </div>
+
       <Table
         columns={columns}
         dataSource={dataTable}

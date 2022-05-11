@@ -8,9 +8,11 @@ import "antd/dist/antd.css";
 import UserTask from "../userTask";
 import { useNavigate, Link } from 'react-router-dom'
 import { LeftOutlined, RightOutlined  } from '@ant-design/icons';
+import {Helmet} from "react-helmet";
 
 const ListUser = () => {
 
+  const { Search } = Input;
   const navigate = useNavigate();
   const [dataTable, setDataTable] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -24,10 +26,11 @@ const ListUser = () => {
   const [page, setPage] = useState(0)
   const [pageSize] = useState(10)
   const [totalCount, setTotalCount] = useState(0)
+  const [search, setSearch] = useState()
 
   useEffect(() => {
     getDataTable();
-  }, []);
+  }, [search]);
 
   const getDataTable = async(pg = page, pgSize = pageSize) => {
     axios
@@ -37,7 +40,8 @@ const ListUser = () => {
         },
         params: {
           page: pg,
-          size: pgSize
+          size: pgSize,
+          search: search
         }
       })
       .then(function (response) {
@@ -81,6 +85,11 @@ const ListUser = () => {
         <Button icon={<RightOutlined />} onClick={nextPage} />
       </>
     )
+  }
+
+  const onSearch = async(value) => {
+    getDataTable()
+    setSearch(value)
   }
 
   const getDataTaskOverview = (record) => {
@@ -200,94 +209,6 @@ const ListUser = () => {
     getDataTaskOverview(record)
   }
 
-  const getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({
-      setSelectedKeys,
-      selectedKeys,
-      confirm,
-      clearFilters,
-    }) => (
-      <div style={{ padding: 8 }}>
-        <Input
-          placeholder={`Tìm kiếm`}
-          value={selectedKeys[0]}
-          onChange={(e) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{ marginBottom: 8, display: "block" }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Tìm
-          </Button>
-          <Button
-            onClick={() => handleReset(clearFilters)}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Xóa
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              handleReset(clearFilters);
-              confirm({ closeDropdown: true });
-              setSearchText(selectedKeys[0]);
-              setSearchedColumn(!dataIndex);
-            }}
-          >
-            Hủy
-          </Button>
-        </Space>
-      </div>
-    ),
-    filterIcon: (filtered) => (
-      <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
-    ),
-    onFilter: (value, record) =>
-      record[dataIndex]
-        ? record[dataIndex]
-            .toString()
-            .toLowerCase()
-            .includes(value.toLowerCase())
-        : "",
-    // onFilterDropdownVisibleChange: visible => {
-    //   if (visible) {
-    //     setTimeout(() => searchInput.select(), 100);
-    //   }
-    // },
-    render: (text) =>
-      searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
-          searchWords={[searchText]}
-          autoEscape
-          textToHighlight={text ? text.toString() : ""}
-        />
-      ) : (
-        text
-      ),
-  });
-
-  const handleSearch = (selectedKeys, confirm, dataIndex) => {
-    confirm({ closeDropdown: true });
-    setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
-  };
-
-  const handleReset = (clearFilters) => {
-    clearFilters();
-    setSearchText("");
-  };
-
   const columns = [
     {
       title: "STT",
@@ -302,7 +223,6 @@ const ListUser = () => {
       dataIndex: "fullName",
       width: 200,
       align: "center",
-      ...getColumnSearchProps("fullName"),
     },
     {
       title: "Giới tính",
@@ -320,14 +240,12 @@ const ListUser = () => {
       dataIndex: "phone",
       width: 200,
       align: "center",
-      ...getColumnSearchProps("phone"),
     },
     {
       title: "Công việc",
       width: 200,
       dataIndex: "job",
       align: "center",
-      ...getColumnSearchProps("job"),
     },
     {
       title: "Hành động",
@@ -376,6 +294,16 @@ const ListUser = () => {
         margin: 20,
       }}
     >
+      <Helmet>
+          <meta charSet="utf-8" />
+          <title>Quản lí người dùng</title>
+      </Helmet>
+      <div className="row">
+        <div className="col"/>
+        <div className="col" style={{textAlign: "right"}}>
+          <Search placeholder="Tìm kiếm theo tên hoặc số điện thoại" onSearch={onSearch} style={{ width: "50%"}}/>
+        </div>
+      </div>
       <Table
         columns={columns}
         dataSource={dataTable}

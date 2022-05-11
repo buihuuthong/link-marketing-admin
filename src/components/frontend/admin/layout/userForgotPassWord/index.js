@@ -6,6 +6,7 @@ import Highlighter from "react-highlight-words";
 import ReactDOM from "react-dom";
 import "antd/dist/antd.css";
 import { LeftOutlined, RightOutlined  } from '@ant-design/icons';
+import {Helmet} from "react-helmet";
 
 const UserForgotPassWord = () => {
   const [dataTable, setDataTable] = useState([]);
@@ -138,89 +139,6 @@ const UserForgotPassWord = () => {
     });
   }
 
-  const getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({
-      setSelectedKeys,
-      selectedKeys,
-      confirm,
-      clearFilters,
-    }) => (
-      <div style={{ padding: 8 }}>
-        <Input
-          placeholder={`Tìm kiếm`}
-          value={selectedKeys[0]}
-          onChange={(e) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{ marginBottom: 8, display: "block" }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Tìm
-          </Button>
-          <Button
-            onClick={() => handleReset(clearFilters)}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Xóa
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              handleReset(clearFilters);
-              confirm({ closeDropdown: true });
-              setSearchText(selectedKeys[0]);
-              setSearchedColumn(!dataIndex);
-            }}
-          >
-            Hủy
-          </Button>
-        </Space>
-      </div>
-    ),
-    filterIcon: (filtered) => (
-      <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
-    ),
-    onFilter: (value, record) =>
-      record[dataIndex]
-        ? record[dataIndex]
-            .toString()
-            .toLowerCase()
-            .includes(value.toLowerCase())
-        : "",
-    render: (text) =>
-      searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
-          searchWords={[searchText]}
-          autoEscape
-          textToHighlight={text ? text.toString() : ""}
-        />
-      ) : (
-        text
-      ),
-  });
-
-  const handleSearch = (selectedKeys, confirm, dataIndex) => {
-    confirm({ closeDropdown: true });
-    setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
-  };
-
-  const handleReset = (clearFilters) => {
-    clearFilters();
-    setSearchText("");
-  };
-
   const columns = [
     {
       title: "STT",
@@ -235,14 +153,12 @@ const UserForgotPassWord = () => {
       dataIndex: "userFullName",
       width: 200,
       align: "center",
-      ...getColumnSearchProps("userFullName"),
     },
     {
       title: "Số điện thoại",
       dataIndex: "userPhone",
       width: 200,
       align: "center",
-      ...getColumnSearchProps("userPhone"),
     },
     {
       title: "Trạng thái",
@@ -290,6 +206,10 @@ const UserForgotPassWord = () => {
         margin: 20,
       }}
     >
+      <Helmet>
+          <meta charSet="utf-8" />
+          <title>Quản lí mật khẩu</title>
+      </Helmet>
       <Table
         columns={columns}
         dataSource={dataTable}

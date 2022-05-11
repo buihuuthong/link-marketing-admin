@@ -6,8 +6,10 @@ import Highlighter from "react-highlight-words";
 import ReactDOM from "react-dom";
 import "antd/dist/antd.css";
   import { LeftOutlined, RightOutlined  } from '@ant-design/icons';
+  import {Helmet} from "react-helmet";
 
 const Admin = () => {
+  const { Search } = Input;
   const [dataTable, setDataTable] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalPass, setIsModalPass] = useState(false);
@@ -28,10 +30,11 @@ const Admin = () => {
   const [page, setPage] = useState(0)
   const [pageSize] = useState(10)
   const [totalCount, setTotalCount] = useState(0)
+  const [search, setSearch] = useState()
 
   useEffect(() => {
     getDataTable();
-  }, []);
+  }, [search]);
 
   const getDataTable = async(pg = page, pgSize = pageSize) => {
     axios
@@ -41,7 +44,8 @@ const Admin = () => {
         },
         params: {
           page: pg,
-          size: pgSize
+          size: pgSize,
+          search: search
         }
       })
       .then(function (response) {
@@ -85,6 +89,11 @@ const Admin = () => {
         <Button icon={<RightOutlined />} onClick={nextPage} />
       </>
     )
+  }
+
+  const onSearch = async(value) => {
+    getDataTable()
+    setSearch(value)
   }
 
   const UpdateUser = () => {
@@ -301,94 +310,6 @@ const Admin = () => {
     getDataSaleOverview(record)
   }
 
-  const getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({
-      setSelectedKeys,
-      selectedKeys,
-      confirm,
-      clearFilters,
-    }) => (
-      <div style={{ padding: 8 }}>
-        <Input
-          placeholder={`Tìm kiếm`}
-          value={selectedKeys[0]}
-          onChange={(e) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{ marginBottom: 8, display: "block" }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Tìm
-          </Button>
-          <Button
-            onClick={() => handleReset(clearFilters)}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Xóa
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              handleReset(clearFilters);
-              confirm({ closeDropdown: true });
-              setSearchText(selectedKeys[0]);
-              setSearchedColumn(!dataIndex);
-            }}
-          >
-            Hủy
-          </Button>
-        </Space>
-      </div>
-    ),
-    filterIcon: (filtered) => (
-      <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
-    ),
-    onFilter: (value, record) =>
-      record[dataIndex]
-        ? record[dataIndex]
-            .toString()
-            .toLowerCase()
-            .includes(value.toLowerCase())
-        : "",
-    // onFilterDropdownVisibleChange: visible => {
-    //   if (visible) {
-    //     setTimeout(() => searchInput.select(), 100);
-    //   }
-    // },
-    render: (text) =>
-      searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
-          searchWords={[searchText]}
-          autoEscape
-          textToHighlight={text ? text.toString() : ""}
-        />
-      ) : (
-        text
-      ),
-  });
-
-  const handleSearch = (selectedKeys, confirm, dataIndex) => {
-    confirm({ closeDropdown: true });
-    setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
-  };
-
-  const handleReset = (clearFilters) => {
-    clearFilters();
-    setSearchText("");
-  };
-
   const handleOk = () => {
     const data = {
       "contactPhone": salePhone,
@@ -440,14 +361,12 @@ const Admin = () => {
       dataIndex: "username",
       width: 200,
       align: "center",
-      ...getColumnSearchProps("username"),
     },
     {
       title: "Họ và tên",
       dataIndex: "fullName",
       width: 200,
       align: "center",
-      ...getColumnSearchProps("fullName"),
     },
     {
       title: "Chức vụ",
@@ -476,7 +395,6 @@ const Admin = () => {
       dataIndex: "contactPhone",
       width: 150,
       align: "center",
-      ...getColumnSearchProps("contactPhone"),
     },
     {
       title: "Hành động",
@@ -525,14 +443,24 @@ const Admin = () => {
         margin: 20,
       }}
     >
-      <>
-        <Button 
-          type="primary"
-          onClick={() => setModalAddSale(true)}
-        >
-          ✖️Thêm tài khoản Sale 
-        </Button>
-      </>
+      <Helmet>
+        <meta charSet="utf-8" />
+        <title>Quản lí sale</title>
+        <link rel="canonical" href="http://mysite.com/example" />
+      </Helmet>
+      <div className="row">
+        <div className="col">
+          <Button 
+            type="primary"
+            onClick={() => setModalAddSale(true)}
+          >
+            ✖️Thêm tài khoản Sale 
+          </Button>
+        </div>
+        <div className="col" style={{textAlign: "right"}}>
+          <Search placeholder="Tìm kiếm theo tên hoặc tài khoản" onSearch={onSearch} style={{ width: "50%"}}/>
+        </div>
+      </div>
       <Table
         columns={columns}
         dataSource={dataTable}

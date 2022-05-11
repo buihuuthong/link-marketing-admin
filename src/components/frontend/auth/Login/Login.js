@@ -7,12 +7,11 @@ import "../../../../assets/auth/js/scripts";
 import "../validator/Validator";
 import InputUsername from "./InputLogin/InputUsername";
 import InputPassword from "./InputLogin/InputPassword";
+import {Helmet} from "react-helmet";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [errorUserName, setErrorUserName] = useState(false)
-  const [errorPassWord, setErrorPassWord] = useState(false)
   const [wrongPassword, setWrongPassword] = useState(false)
   const navigate = useNavigate();
 
@@ -44,6 +43,10 @@ function Login() {
     <div className="bg-primary">
       <div id="layoutAuthentication">
         <div id="layoutAuthentication_content">
+          <Helmet>
+              <meta charSet="utf-8" />
+              <title>Đăng nhập</title>
+          </Helmet>
           <main>
             <div className="container">
               <div className="row justify-content-center">
@@ -88,21 +91,6 @@ function Login() {
                           { wrongPassword ? 
                           <span style={{ color: "red" }}>Sai mật khẩu hoặc tài khoản của bạn không tồn tại!</span>
                           : null}
-                        </div>
-
-                        <div className="form-check mb-3">
-                          <input
-                            className="form-check-input"
-                            id="inputRememberPassword"
-                            type="checkbox"
-                            value=""
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="inputRememberPassword"
-                          >
-                            Nhớ mật khẩu
-                          </label>
                         </div>
                         <div className="d-flex align-items-center justify-content-between mt-4 mb-0">
                           <a className="small" href="/forgotpassword">

@@ -14,6 +14,7 @@ import {
 import axios from "axios";
 import { List, message, Avatar, Skeleton, Divider } from "antd";
 import InfiniteScroll from "react-infinite-scroll-component";
+import {Helmet} from "react-helmet";
 
 // import './user.scss';
 
@@ -141,6 +142,10 @@ const UserInformation = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }} className="boxContainer">
+      <Helmet>
+          <meta charSet="utf-8" />
+          <title>Thông tin chi tiết</title>
+      </Helmet>
       <Grid container spacing={0}>
         <Grid item xs={8}>
           {/* <LeftInformation /> */}

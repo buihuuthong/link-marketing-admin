@@ -4,9 +4,11 @@ import axios from "axios";
 import "antd/dist/antd.css";
 import { useNavigate } from 'react-router-dom'
 import { LeftOutlined, RightOutlined  } from '@ant-design/icons';
+import {Helmet} from "react-helmet";
 
 const WithDraw = () => {
 
+  const { Search } = Input;
   const navigate = useNavigate();
   const [dataTable, setDataTable] = useState([]);
   const [isModalRejectTransaction, setIsModalRejectTransaction] = useState(false)
@@ -15,10 +17,11 @@ const WithDraw = () => {
   const [page, setPage] = useState(0)
   const [pageSize] = useState(10)
   const [totalCount, setTotalCount] = useState(0)
+  const [search, setSearch] = useState()
 
   useEffect(() => {
     getDataTable();
-  }, []);
+  }, [search]);
 
   const getDataTable = async(pg = page, pgSize = pageSize) => {
     axios
@@ -29,7 +32,8 @@ const WithDraw = () => {
         params: {
             "type": "WITHDRAW",
             page: pg,
-            size: pgSize
+            size: pgSize,
+            search: search
         }
       })
       .then(function (response) {
@@ -73,6 +77,11 @@ const WithDraw = () => {
         <Button icon={<RightOutlined />} onClick={nextPage} />
       </>
     )
+  }
+
+  const onSearch = async(value) => {
+    getDataTable()
+    setSearch(value)
   }
 
   const onAcceptTransaction = (record) => {
@@ -247,6 +256,18 @@ const WithDraw = () => {
         margin: 20,
       }}
     >
+      <Helmet>
+          <meta charSet="utf-8" />
+          <title>Quản lí rút tiền</title>
+      </Helmet>
+
+      <div className="row">
+        <div className="col"/>
+        <div className="col" style={{textAlign: "right"}}>
+          <Search placeholder="Tìm kiếm theo tên hoặc số điện thoại" onSearch={onSearch} style={{ width: "50%"}}/>
+        </div>
+      </div>
+      
       <Table
         columns={columns}
         dataSource={dataTable}
