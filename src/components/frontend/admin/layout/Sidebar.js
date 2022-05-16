@@ -1,12 +1,48 @@
-import React from "react";
-import {Link} from 'react-router-dom'
+import React, { useState, useEffect} from "react";
+import {Link, useNavigate} from 'react-router-dom'
 import "../../../../assets/auth/css/styles.css";
 import "../../../../assets/auth/js/scripts";
+import axios from "axios";
+
 const Sidebar = () => {
+
+  const navigate = useNavigate();
+  const [role, setRole] = useState('')
+
+  useEffect(() => {
+    getUserRole()
+  }, [])
+  
+
+  const getUserRole = () => {
+    axios
+      .get("https://api.tmdtbamboo.com/api/managers/account", {
+        headers: {
+          'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
+        },
+      })
+      .then(function (response) {
+        // handle success
+        setRole(response.data.role)
+        console.log(response.data.role)
+        if(response.data.role == "ROLE_SALE"){
+          navigate('/admin/admin-user')
+        }
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      })
+      .then(function () {
+        // always executed
+      });
+  }
+
   return (
     <div className="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
       <div className="sb-sidenav-menu">
         <div className="nav">
+          {role == "ROLE_SALE" ? null :
           <Link
             className="nav-a"
             to="/admin"
@@ -18,6 +54,7 @@ const Sidebar = () => {
             </div>{" "}
             Quản lí Sale
           </Link>
+          }
 
           <Link
             className="nav-a"
