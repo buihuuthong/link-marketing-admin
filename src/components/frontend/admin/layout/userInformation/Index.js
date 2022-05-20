@@ -173,18 +173,19 @@ const UserInformation = () => {
 
   const putUserError = () => {
     axios
-      .get("https://api.tmdtbamboo.com/api/deposit-error", {
+      .put("https://api.tmdtbamboo.com/api/deposit-error",{"depositError":depositError}, {
         headers: {
           Authorization: `Bearer ${window.sessionStorage.getItem("token")}`,
         },
         params: {
           userId: id,
-          depositError: depositError
+          depositError: depositError 
         },
       })
       .then(function (response) {
         console.log(response);
-        getUserError();
+        setDepositError('')
+        getUserError()
       })
       .catch(function (error) {
         // handle error
