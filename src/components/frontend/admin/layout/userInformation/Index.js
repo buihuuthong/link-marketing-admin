@@ -23,6 +23,8 @@ const UserInformation = () => {
   const [readMore, setReadMore] = useState(false);
   const [userData, setUserData] = useState([]);
   const [userInfo, setUserInfo] = useState([]);
+  const [userError, setUserError] = useState('')
+  const [depositError, setDepositError] = useState('')
   const [userTransaction, setUserTransaction] = useState([]);
   const [userTask, setUserTask] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -32,6 +34,7 @@ const UserInformation = () => {
     getUserInfo();
     getUserTransaction();
     getUserTask()
+    getUserError()
     console.log("Id: ", id);
   }, [id]);
 
@@ -129,6 +132,59 @@ const UserInformation = () => {
         // handle success
         setUserTask(response.data);
         setLoading(false);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error.request);
+        setLoading(false);  
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
+  const getUserError = () => {
+    if (loading) {
+      return;
+    }
+    axios
+      .get("https://api.tmdtbamboo.com/api/deposit-error", {
+        headers: {
+          Authorization: `Bearer ${window.sessionStorage.getItem("token")}`,
+        },
+        params: {
+          userId: id,
+        },
+      })
+      .then(function (response) {
+        // handle success
+        setUserError(response.data);
+        setLoading(false);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error.request);
+        setLoading(false);  
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
+  const putUserError = () => {
+    axios
+      .get("https://api.tmdtbamboo.com/api/deposit-error", {
+        headers: {
+          Authorization: `Bearer ${window.sessionStorage.getItem("token")}`,
+        },
+        params: {
+          userId: id,
+          depositError: depositError
+        },
+      })
+      .then(function (response) {
+        console.log(response);
+        getUserError();
       })
       .catch(function (error) {
         // handle error
@@ -263,6 +319,9 @@ const UserInformation = () => {
                     <div className="col">
                       <h5>Báo lỗi</h5>
                     </div>
+                    <div style={{ marginBottom: 10}}>
+                    <label style={{ fontWeight: 'bold' }}>Lỗi hiện tại: </label><span style={{ color: "red"}}> {userError}</span>
+                    </div>
                     <div>
                       <input
                         type="text"
@@ -270,6 +329,8 @@ const UserInformation = () => {
                           width: 300,
                           borderColor: "#FF9999",
                         }}
+                        value={depositError}
+                        onChange={(e) => setDepositError(e.target.value)}
                       />
                       <input
                         type="submit"
@@ -280,6 +341,7 @@ const UserInformation = () => {
                           color: "#FF0000",
                           borderColor: "#FF9999",
                         }}
+                        onClick={putUserError}
                       />
                     </div>
                     <div></div>
