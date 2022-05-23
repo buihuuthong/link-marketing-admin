@@ -257,7 +257,7 @@ const ListUser = () => {
           <div className="row">
             <div className="mb-1">
               <Tag color="green">
-                <Link style={{ marginRight: 10}} to={`/user-information/${record.id}`}>
+                <Link to={`/user-information/${record.id}`}>
                 Thông tin chi tiết
               </Link>
               </Tag>

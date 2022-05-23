@@ -99,7 +99,10 @@ const Bonus = () => {
       })
       .then(function (response) {
         // handle success
-        setDataTable(response.data);
+        setIsModalBonusMoney(false)
+        setAmount(0)
+        setReason('')
+        getDataTable();
       })
       .catch(function (error) {
         // handle error
@@ -124,7 +127,10 @@ const Bonus = () => {
       })
       .then(function (response) {
         // handle success
-        setDataTable(response.data);
+        setIsModalDeductionMoney(false)
+        setAmount(0)
+        setReason('')
+        getDataTable();
       })
       .catch(function (error) {
         // handle error
@@ -172,6 +178,11 @@ const Bonus = () => {
       width: 200,
       dataIndex: "type",
       align: "center",
+      render: type => (
+        <Space key={type}>
+          {type == 'BONUS' ? "Quản lí thưởng" : null}
+        </Space>
+      ),
     },
     {
       title: "Số tiền",
@@ -184,12 +195,23 @@ const Bonus = () => {
       width: 200,
       dataIndex: "paymentType",
       align: "center",
+      render: paymentType => (
+        <Space key={paymentType}>
+          {paymentType == 'DIRECT' ? "Trực Tiếp" :
+          paymentType == 'BANK_TRANSFER' ? "Chuyển khoản ngân hàng" : null}
+        </Space>
+      ),
     },
     {
       title: "Trạng thái",
       width: 200,
       dataIndex: "status",
       align: "center",
+      render: status => (
+        <Space key={status}>
+          {status == 'DONE' ? "Xong" : null}
+        </Space>
+      ),
     },
     {
       title: "Lưu ý",
@@ -211,14 +233,12 @@ const Bonus = () => {
       render: (record) => (
         <Space size="middle">
           <div className="row">
-            <div className="mb-1">
-              <Tag color="blue">
+              <Tag className="mb-2" color="blue">
                 <a onClick={() => onBonus(record)}>Thưởng tiền</a>
               </Tag>
               <Tag color="red">
                 <a onClick={() => onDeduction(record)}>Trừ tiền</a>
               </Tag>
-            </div>
           </div>
         </Space>
       ),

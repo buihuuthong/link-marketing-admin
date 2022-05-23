@@ -171,7 +171,7 @@ const TaskDeposite = () => {
       align: "center",
       render: type => (
         <Space key={type}>
-          {type == 'TASK_DEPOSITE' ? "Nạp lên cấp" : null}
+          {type == 'TASK_DEPOSITE' ? "Nạp nhiệm vụ" : null}
         </Space>
       ),
     },

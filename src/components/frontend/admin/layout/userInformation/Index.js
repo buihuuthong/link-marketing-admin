@@ -12,13 +12,14 @@ import {
   useParams,
 } from "react-router-dom";
 import axios from "axios";
-import { List, message, Avatar, Skeleton, Divider } from "antd";
+import { List, message, Avatar, Skeleton, Divider, Table, Space, Modal, Input, Button, Tag } from "antd";
 import InfiniteScroll from "react-infinite-scroll-component";
 import {Helmet} from "react-helmet";
 
 // import './user.scss';
 
 const UserInformation = () => {
+
   const { id } = useParams();
   const [readMore, setReadMore] = useState(false);
   const [userData, setUserData] = useState([]);
@@ -28,6 +29,10 @@ const UserInformation = () => {
   const [userTransaction, setUserTransaction] = useState([]);
   const [userTask, setUserTask] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [reason, setReason] = useState('')
+  const [amount , setAmount ] = useState(0)
+  const [isModalBonusMoney, setIsModalBonusMoney] = useState(false)
+  const [isModalDeductionMoney, setIsModalDeductionMoney] = useState(false)
 
   useEffect(() => {
     getUserById();
@@ -197,11 +202,77 @@ const UserInformation = () => {
       });
   };
 
+  const Bonus = () => {
+    axios
+      .post("https://api.tmdtbamboo.com/api/transactions/bonus", {}, {
+        headers: {
+          'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
+        },
+        params: {
+            "userId": id,
+            "amount": amount,
+            "reason": reason
+        }
+      })
+      .then(function (response) {
+        // handle success
+        console.log(response.data);
+        setIsModalBonusMoney(false)
+        getUserInfo()
+        setAmount(0)
+        setReason('')
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error.request);
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
+  const Deduction = () => {
+    axios
+      .post("https://api.tmdtbamboo.com/api/transactions/bonus", {}, {
+        headers: {
+          'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
+        },
+        params: {
+            "userId": id,
+            "amount": amount,
+            "reason": reason
+        }
+      })
+      .then(function (response) {
+        // handle success
+        console.log(response.data);
+        setIsModalDeductionMoney(false)
+        getUserInfo()
+        setAmount(0)
+        setReason('')
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error.request);
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
+  const onBonus = (record) => {
+    setIsModalBonusMoney(true);
+  }
+
+  const onDeduction = (record) => {
+    setIsModalDeductionMoney(true);
+  }
+
   return (
     <Box sx={{ flexGrow: 1 }} className="boxContainer">
       <Helmet>
-          <meta charSet="utf-8" />
-          <title>Thông tin chi tiết</title>
+        <meta charSet="utf-8" />
+        <title>Thông tin chi tiết</title>
       </Helmet>
       <Grid container spacing={0}>
         <Grid item xs={8}>
@@ -274,7 +345,7 @@ const UserInformation = () => {
                     <div
                       id="scrollableDiv"
                       style={{
-                        height: '100%',
+                        height: "100%",
                         overflow: "auto",
                         padding: "0 16px",
                         border: "1px solid rgba(140, 140, 140, 0.35)",
@@ -285,7 +356,11 @@ const UserInformation = () => {
                         next={getUserTransaction}
                         hasMore={userTransaction.length < 50}
                         loader={
-                          <Skeleton avatar paragraph={{ rows: 1 }} loading={loading} />
+                          <Skeleton
+                            avatar
+                            paragraph={{ rows: 1 }}
+                            loading={loading}
+                          />
                         }
                         endMessage={
                           <Divider plain>It is all, nothing more 🤐</Divider>
@@ -295,18 +370,24 @@ const UserInformation = () => {
                         <List
                           dataSource={userTransaction}
                           noDataText="Không có dữ liệu"
-                          locale={{emptyText: "Không có dữ liệu"}}
+                          locale={{ emptyText: "Không có dữ liệu" }}
                           renderItem={(item) => (
                             <List.Item key={item.id} className="row">
                               <List.Item.Meta
                                 title={
                                   <p>
-                                    {item.paymentType == "BANK_TRANSFER" ? "Chuyển khoản ngân hàng" : "Giao dịch trực tiếp"}
+                                    {item.paymentType == "BANK_TRANSFER"
+                                      ? "Chuyển khoản ngân hàng"
+                                      : "Giao dịch trực tiếp"}
                                   </p>
                                 }
                               />
                               <div>
-                                <label>Số tiền: </label><span style={{ color: "grey"}}> {item.amount}</span>
+                                <label>Số tiền: </label>
+                                <span style={{ color: "grey" }}>
+                                  {" "}
+                                  {item.amount}
+                                </span>
                               </div>
                             </List.Item>
                           )}
@@ -320,14 +401,17 @@ const UserInformation = () => {
                     <div className="col">
                       <h5>Báo lỗi</h5>
                     </div>
-                    <div style={{ marginBottom: 10}}>
-                    <label style={{ fontWeight: 'bold' }}>Lỗi hiện tại: </label><span style={{ color: "red"}}> {userError}</span>
+                    <div style={{ marginBottom: 10 }}>
+                      <label style={{ fontWeight: "bold" }}>
+                        Lỗi hiện tại:{" "}
+                      </label>
+                      <span style={{ color: "red" }}> {userError}</span>
                     </div>
                     <div>
                       <input
                         type="text"
                         style={{
-                          width: 300,
+                          width: "50%",
                           borderColor: "#FF9999",
                         }}
                         value={depositError}
@@ -423,6 +507,16 @@ const UserInformation = () => {
                       <label style={label}>Số dư: </label>
                       <span> {userInfo.money}</span>
                     </div>
+                    <div style={{ textAlign: "center" }}> 
+                      <div class="row justify-content-evenly">
+                        <div class="col-md-4">
+                          <button class="btn-success" style={transactionBonus} onClick={onBonus}>Cộng tiền</button>
+                        </div>
+                        <div class="col-md-4">
+                          <button class="btn-danger" style={transactionBonus}  onClick={onDeduction}>Trừ tiền</button>
+                        </div>
+                      </div>
+                    </div>
                     <div>
                       <h6 style={{ textAlign: "center" }}>Điểm tín dụng:</h6>
                       <label style={label}>Trong tháng: </label>
@@ -443,7 +537,7 @@ const UserInformation = () => {
                     <div
                       id="scrollableDiv"
                       style={{
-                        height: '100%',
+                        height: "100%",
                         overflow: "auto",
                         padding: "0 16px",
                         border: "1px solid rgba(140, 140, 140, 0.35)",
@@ -454,7 +548,11 @@ const UserInformation = () => {
                         next={getUserTask}
                         hasMore={userTask.length < 50}
                         loader={
-                          <Skeleton avatar paragraph={{ rows: 1 }} loading={loading} />
+                          <Skeleton
+                            avatar
+                            paragraph={{ rows: 1 }}
+                            loading={loading}
+                          />
                         }
                         endMessage={
                           <Divider plain>It is all, nothing more 🤐</Divider>
@@ -464,19 +562,19 @@ const UserInformation = () => {
                         <List
                           dataSource={userTask}
                           noDataText="Không có dữ liệu"
-                          locale={{emptyText: "Không có dữ liệu"}}
+                          locale={{ emptyText: "Không có dữ liệu" }}
                           renderItem={(item) => (
                             <List.Item key={item.id} className="row">
                               <List.Item.Meta
-                                title={
-                                  <p>
-                                    {item.productName}
-                                  </p>
-                                }
+                                title={<p>{item.productName}</p>}
                                 description={item.description}
                               />
                               <div>
-                                <label>Điểm nhận: </label><span style={{ color: "grey"}}> {item.receivedPoint}</span>
+                                <label>Điểm nhận: </label>
+                                <span style={{ color: "grey" }}>
+                                  {" "}
+                                  {item.receivedPoint}
+                                </span>
                               </div>
                             </List.Item>
                           )}
@@ -490,6 +588,52 @@ const UserInformation = () => {
           </div>
         </Grid>
       </Grid>
+      
+      <Modal
+        title="Cộng tiền"
+        visible={isModalBonusMoney}
+        onOk={() => Bonus()}
+        onCancel={() => setIsModalBonusMoney(false)}
+        okText="Xác nhận"
+        cancelText="Hủy"
+        zIndex={2000}
+        centered
+      >
+        <label>Số tiền: </label>
+        <Input
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+        />
+
+        <label>Lí do: </label>
+        <Input
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+        />
+      </Modal>
+
+      <Modal
+        title="Trừ tiền"
+        visible={isModalDeductionMoney}
+        onOk={() => Deduction()}
+        onCancel={() => setIsModalDeductionMoney(false)}
+        okText="Xác nhận"
+        cancelText="Hủy"
+        zIndex={2000}
+        centered
+      >
+        <label>Số tiền (số tiền nhập vào là số âm): </label>
+        <Input
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+        />
+
+        <label>Lí do: </label>
+        <Input
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+        />
+      </Modal>
     </Box>
   );
 };
@@ -547,3 +691,13 @@ const leftBox = {
 const buttonError = {
   marginLeft: 20,
 };
+
+const transactionBonus = {
+  marginTop: 10,
+  marginBottom: 10,
+  border: 'none',
+  borderRadius: 10,
+  padding: 10,
+  textAlign: "center",
+  width: '100%'
+}
