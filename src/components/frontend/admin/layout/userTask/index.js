@@ -5,7 +5,9 @@ import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import ReactDOM from "react-dom";
 import "antd/dist/antd.css";
+import "./userTask.css"
 import { LeftOutlined, RightOutlined  } from '@ant-design/icons';
+const { TextArea } = Input;
 
 const UserTask = (userId) => {
   const [dataTable, setDataTable] = useState([]);
@@ -50,6 +52,7 @@ const UserTask = (userId) => {
       .then(function (response) {
         // handle success
         setDataTable(response.data);
+        console.log(response.data);
         setTotalCount(response.data.length);
       })
       .catch(function (error) {
@@ -209,6 +212,15 @@ const UserTask = (userId) => {
 
   const handleCancel = (record) => {
     setIsModalAddTask(false);
+    setCommissionPercentage('');
+    setDescription('');
+    setOriginalPrice('');
+    setProductLink('');
+    setProductName('');
+    setReceivedPoint('');
+    setUnlockPrice('');
+    setStatus('');
+    setTaskId('');
   };
 
   const onChangeStatus = (record) => {
@@ -306,14 +318,19 @@ const UserTask = (userId) => {
     {
       title: "Tên sản phẩm",
       dataIndex: "productName",
-      width: 200,
+      width: 300,
       align: "center",
     },
     {
       title: "Mô tả",
       dataIndex: "description",
       align: "center",
-      width: 200,
+      width: 400,
+      render: description => (
+        <div  className="display-linebreak">
+          {description}
+        </div>
+      ),
     },
     {
       title: "Hình ảnh",
@@ -331,11 +348,13 @@ const UserTask = (userId) => {
       title: "Liên kết sản phẩm",
       dataIndex: "productLink",
       align: "center",
+      width: 300
     },
     {
       title: "Trạng thái",
       dataIndex: "status",
       align: "center",
+      width: 100,
       render: status => (
         <Space key={status}>
           {status == 'DOING' ? "Đang chờ" :
@@ -350,21 +369,25 @@ const UserTask = (userId) => {
       title: "Giá gốc",
       dataIndex: "originalPrice",
       align: "center",
+      width: 100,
     },
     {
       title: "Giá bán",
       dataIndex: "unlockPrice",
       align: "center",
+      width: 100,
     },
     {
       title: "Hoa hồng",
       dataIndex: "commissionPercentage",
       align: "center",
+      width: 100,
     },
     {
       title: "Điểm nhận",
       dataIndex: "receivedPoint",
       align: "center",
+      width: 100,
     },
     {
       title: "Hành động",
@@ -461,7 +484,8 @@ const UserTask = (userId) => {
         <label>
           <p style={{ marginTop: 5 }}>Mô tả: </p>
         </label>
-        <Input
+        <TextArea
+          row={6}
           value={editTask?.description}
           onChange={(e) => {
             setEditTask((pre) => {
@@ -552,7 +576,8 @@ const UserTask = (userId) => {
         <label>
           <p style={{ marginTop: 5 }}>Mô tả: </p>
         </label>
-        <Input
+        <TextArea
+          row={6}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
