@@ -91,6 +91,19 @@ const Sidebar = () => {
             </div>{" "}
             Quản lí giao dịch
           </Link>
+
+          
+          <Link
+            className="nav-a"
+            to="/admin/rating"
+            style={{ textAlign: "center", padding: "10px 0" }}
+          >
+            <div className="sb-nav-link-icon">
+              {" "}
+              <i className="fa-solid fa-chart-mixed"></i>
+            </div>{" "}
+            Quản lí xếp hạng
+          </Link>
         </div>
       </div>
     </div>

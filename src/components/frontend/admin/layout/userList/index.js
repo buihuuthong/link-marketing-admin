@@ -248,6 +248,12 @@ const ListUser = () => {
       align: "center",
     },
     {
+      title: "Tên sale quản lí",
+      width: 200,
+      dataIndex: "managerFullName",
+      align: "center",
+    },
+    {
       title: "Hành động",
       width: 200,
       dataIndex: "",

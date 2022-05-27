@@ -11,6 +11,7 @@ const { TextArea } = Input;
 
 const UserTask = (userId) => {
   const [dataTable, setDataTable] = useState([]);
+  const [userAgent, setUserAgent] = useState([]);
   const [isModalEditTask, setIsModalEditTask] = useState(false);
   const [isModalAddTask, setIsModalAddTask] = useState(false);
   const [isModalChangeStatus, setIsModalChangeStatus] = useState(false);
@@ -18,7 +19,7 @@ const UserTask = (userId) => {
   const [editTask, setEditTask] = useState(null);
 
   //add task
-  const [commissionPercentage, setCommissionPercentage] = useState(0);
+  const [commissionPercentage, setCommissionPercentage] = useState(null);
   const [description, setDescription] = useState("");
   const [originalPrice, setOriginalPrice] = useState(0);
   const [productLink, setProductLink] = useState("");
@@ -35,6 +36,7 @@ const UserTask = (userId) => {
 
   useEffect(() => {
     getDataTable();
+    getUserAgent()
   }, [userId]);
 
   const getDataTable = async(pg = page, pgSize = pageSize) => {
@@ -52,8 +54,31 @@ const UserTask = (userId) => {
       .then(function (response) {
         // handle success
         setDataTable(response.data);
-        console.log(response.data);
         setTotalCount(response.data.length);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error.request);
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
+  const getUserAgent = async() => {
+    axios
+      .get("https://api.tmdtbamboo.com/api/tasks/user-agent", {
+        headers: {
+          Authorization: `Bearer ${window.sessionStorage.getItem("token")}`,
+        },
+        params: {
+          userId: userId.userId
+        },
+      })
+      .then(function (response) {
+        // handle success
+        setUserAgent(response.data);
+        console.log(response.data);
       })
       .catch(function (error) {
         // handle error
@@ -95,7 +120,7 @@ const UserTask = (userId) => {
 
   const UpdateUser = () => {
     const data = {
-      commissionPercentage: editTask.commissionPercentage,
+      commissionPercentage: editTask.commissionPercentage * (userAgent.discount / 100),
       description: editTask.description,
       originalPrice: editTask.originalPrice,
       productLink: editTask.productLink,
@@ -115,6 +140,7 @@ const UserTask = (userId) => {
       })
       .then(function (response) {
         // handle success
+        getDataTable();
         console.log("Success");
       })
       .catch(function (error) {
@@ -177,7 +203,7 @@ const UserTask = (userId) => {
 
   const handleOk = () => {
     const data = {
-      commissionPercentage: commissionPercentage,
+      commissionPercentage: commissionPercentage * (userAgent.discount / 100),
       description: description,
       originalPrice: originalPrice,
       productLink: productLink,
@@ -378,7 +404,7 @@ const UserTask = (userId) => {
       width: 100,
     },
     {
-      title: "Hoa hồng",
+      title: "Hoa hồng(%)",
       dataIndex: "commissionPercentage",
       align: "center",
       width: 100,
@@ -543,7 +569,7 @@ const UserTask = (userId) => {
         />
 
         <label>
-          <p style={{ marginTop: 5 }}>Hoa hồng:</p>
+          <p style={{ marginTop: 5 }}>Hoa hồng({userAgent.discount}%):</p>
         </label>
         <Input
           value={editTask?.commissionPercentage}
@@ -558,10 +584,12 @@ const UserTask = (userId) => {
       {/* Modal thêm nhiệm vụ */}
 
       <Modal
-        title="Basic Modal"
+        title="Thêm nhiệm vụ"
         visible={isModalAddTask}
         onOk={handleOk}
         onCancel={handleCancel}
+        okText="Xác nhận"
+        cancelText="Hủy"
         zIndex={2147483647}
         centered
       >
@@ -610,12 +638,12 @@ const UserTask = (userId) => {
           <p style={{ marginTop: 5 }}>Điểm nhận được:</p>
         </label>
         <Input
-          value={receivedPoint}
+          value={userAgent.creditPointsTask}
           onChange={(e) => setReceivedPoint(e.target.value)}
         />
 
         <label>
-          <p style={{ marginTop: 5 }}>Hoa hồng:</p>
+          <p style={{ marginTop: 5 }}>Hoa hồng({userAgent.discount}%):</p>
         </label>
         <Input
           value={commissionPercentage}
