@@ -205,6 +205,7 @@ const ListUser = () => {
       .then(function (response) {
         // handle success
         console.log("Success");
+        setNewPassword('')
       })
       .catch(function (error) {
         // handle error
@@ -223,6 +224,7 @@ const ListUser = () => {
   const resetEditing = () => {
     setIsModalVisible(false);
     setIsModalPass(false)
+    setNewPassword('')
     setEditUser(null);
   };
 
