@@ -568,7 +568,7 @@ const Admin = () => {
 
       {/* Đổi mật khẩu sale */}
       <Modal
-        title="Sửa thông tin người dùng"
+        title="Đổi mật khẩu slae"
         visible={isModalPass}
         onOk={() => {
           UpdateUserPassword()

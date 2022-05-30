@@ -17,16 +17,16 @@ const ListUser = () => {
   const [dataTable, setDataTable] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalTask, setIsModalTask] = useState(false);
-  const [isModalOverviewTask, setIsModalOverviewTask] = useState(false)
+  const [isModalOverviewTask, setIsModalOverviewTask] = useState(false);
   const [editUser, setEditUser] = useState(null);
-  const [searchText, setSearchText] = useState("");
-  const [searchedColumn, setSearchedColumn] = useState();
-  const [userId, setUserId] = useState('')
-  const [dataTaskOverview, setDataTaskOverview] = useState([])
-  const [page, setPage] = useState(0)
-  const [pageSize] = useState(10)
-  const [totalCount, setTotalCount] = useState(0)
-  const [search, setSearch] = useState()
+  const [isModalPass, setIsModalPass] = useState(false);
+  const [userId, setUserId] = useState('');
+  const [dataTaskOverview, setDataTaskOverview] = useState([]);
+  const [page, setPage] = useState(0);
+  const [pageSize] = useState(10);
+  const [totalCount, setTotalCount] = useState(0);
+  const [search, setSearch] = useState();
+  const [newPassword, setNewPassword] = useState('')
 
   useEffect(() => {
     getDataTable();
@@ -188,6 +188,33 @@ const ListUser = () => {
     });
   };
 
+  const UpdateUserPassword = () => {
+    const data = {
+      "newPassword": newPassword,
+    }
+    
+    axios
+      .put("https://api.tmdtbamboo.com/api/managers/users/password", data, {
+        headers: {
+          'Authorization': `Bearer ${window.sessionStorage.getItem('token')}`
+        },
+        params: {
+          "id": userId,
+        }
+      })
+      .then(function (response) {
+        // handle success
+        console.log("Success");
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error.request);
+      })
+      .then(function () {
+        // always executed
+      });
+  };
+
   const editUsersTable = (record) => {
     setIsModalVisible(true);
     setEditUser({ ...record });
@@ -195,11 +222,12 @@ const ListUser = () => {
 
   const resetEditing = () => {
     setIsModalVisible(false);
+    setIsModalPass(false)
     setEditUser(null);
   };
 
   const onGetUserTask = (record) => {
-    setIsModalTask(true)
+    setIsModalTask(true);
     // console.log(record.id);
     setUserId(record.id);
   }
@@ -207,6 +235,11 @@ const ListUser = () => {
   const onOverviewUserTask = (record) => {
     setIsModalOverviewTask(true)
     getDataTaskOverview(record)
+  }
+
+  const onChangePassword = (record) => {
+    setIsModalPass(true);
+    setUserId(record.id);
   }
 
   const columns = [
@@ -274,6 +307,11 @@ const ListUser = () => {
               </Tag>
               <Tag color="red">
                 <a onClick={() => onDeleteUser(record)}>Xóa</a>
+              </Tag>
+            </div>
+            <div className="mb-1">
+              <Tag color="geekblue">
+                <a onClick={() => onChangePassword(record)}>Đổi mật khẩu</a>
               </Tag>
             </div>
             <div className="mb-1">
@@ -466,6 +504,30 @@ const ListUser = () => {
             <span> {dataTaskOverview.totalBonus}</span>
           </div>
         </div>
+      </Modal>
+      
+      {/* Đổi mật khẩu user */}
+      <Modal
+        title="Sửa thông tin người dùng"
+        visible={isModalPass}
+        onOk={() => {
+          UpdateUserPassword()
+          resetEditing();
+        }}
+        onCancel={() => {
+          resetEditing();
+        }}
+        okText="Xác nhận"
+        cancelText="Hủy"
+      >
+
+        <label>
+          <p style={{ marginTop: 5 }}>Mật khẩu mới:</p>
+        </label>
+        <Input
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+        />
       </Modal>
     </div>
   );
