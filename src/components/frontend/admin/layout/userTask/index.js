@@ -120,13 +120,13 @@ const UserTask = (userId) => {
 
   const UpdateUser = () => {
     const data = {
-      commissionPercentage: editTask.commissionPercentage * (userAgent.discount / 100),
       description: editTask.description,
       originalPrice: editTask.originalPrice,
       productLink: editTask.productLink,
       productName: editTask.productName,
       receivedPoint: editTask.receivedPoint,
       unlockPrice: editTask.unlockPrice,
+      commissionPercentage: editTask.unlockPrice * (userAgent.discount / 100),
     };
 
     axios
@@ -203,12 +203,13 @@ const UserTask = (userId) => {
 
   const handleOk = () => {
     const data = {
-      commissionPercentage: commissionPercentage * (userAgent.discount / 100),
+      commissionPercentage: commissionPercentage,
       description: description,
       originalPrice: originalPrice,
       productLink: productLink,
       productName: productName,
-      receivedPoint: receivedPoint,
+      receivedPoint: userAgent.creditPointsTask,
+      commissionPercentage: unlockPrice * (userAgent.discount / 100),
       unlockPrice: unlockPrice,
     };
 
@@ -572,7 +573,7 @@ const UserTask = (userId) => {
           <p style={{ marginTop: 5 }}>Hoa hồng({userAgent.discount}%):</p>
         </label>
         <Input
-          value={editTask?.commissionPercentage}
+          value={editTask?.unlockPrice * (userAgent.discount / 100)}
           onChange={(e) => {
             setEditTask((pre) => {
               return { ...pre, commissionPercentage: e.target.value };
@@ -639,14 +640,13 @@ const UserTask = (userId) => {
         </label>
         <Input
           value={userAgent.creditPointsTask}
-          onChange={(e) => setReceivedPoint(e.target.value)}
         />
 
         <label>
           <p style={{ marginTop: 5 }}>Hoa hồng({userAgent.discount}%):</p>
         </label>
         <Input
-          value={commissionPercentage}
+          value={unlockPrice * (userAgent.discount / 100)}
           onChange={(e) => setCommissionPercentage(e.target.value)}
         />
       </Modal>
